@@ -10,6 +10,7 @@ using namespace std;
 //Screen attributes
 SDL_Window * window;
 
+
 //OpenGL context 
 SDL_GLContext gContext;
 const int SCREEN_WIDTH = 1024;
