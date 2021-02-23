@@ -1,0 +1,36 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.30711.63
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "ComputerGraphics", "Lab 1.vcxproj", "{9A4DBC42-B84D-477B-BCBD-A152F48DC369}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{7A80A194-816A-42BE-92CC-D6CD9CD0506A}"
+	ProjectSection(SolutionItems) = preProject
+		.gitignore = .gitignore
+	EndProjectSection
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|x64 = Debug|x64
+		Debug|x86 = Debug|x86
+		Release|x64 = Release|x64
+		Release|x86 = Release|x86
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{9A4DBC42-B84D-477B-BCBD-A152F48DC369}.Debug|x64.ActiveCfg = Debug|x64
+		{9A4DBC42-B84D-477B-BCBD-A152F48DC369}.Debug|x64.Build.0 = Debug|x64
+		{9A4DBC42-B84D-477B-BCBD-A152F48DC369}.Debug|x86.ActiveCfg = Debug|Win32
+		{9A4DBC42-B84D-477B-BCBD-A152F48DC369}.Debug|x86.Build.0 = Debug|Win32
+		{9A4DBC42-B84D-477B-BCBD-A152F48DC369}.Release|x64.ActiveCfg = Release|x64
+		{9A4DBC42-B84D-477B-BCBD-A152F48DC369}.Release|x64.Build.0 = Release|x64
+		{9A4DBC42-B84D-477B-BCBD-A152F48DC369}.Release|x86.ActiveCfg = Release|Win32
+		{9A4DBC42-B84D-477B-BCBD-A152F48DC369}.Release|x86.Build.0 = Release|Win32
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {F841C782-A376-49A6-8486-A08AFC316A65}
+	EndGlobalSection
+EndGlobal

@@ -10,24 +10,19 @@ using namespace std;
 //Screen attributes
 SDL_Window * window;
 
-
 //OpenGL context 
 SDL_GLContext gContext;
-const int SCREEN_WIDTH = 1024;
-const int SCREEN_HEIGHT = 860;
+const int SCREEN_WIDTH = 800;
+const int SCREEN_HEIGHT = 640;
 
 //Event handler
 SDL_Event event;
 
 Renderer * renderer = nullptr;
 
-void clean_up()
+void func()
 {
-	delete renderer;
-
-	SDL_GL_DeleteContext(gContext);
-	SDL_DestroyWindow(window);
-	SDL_Quit();
+	system("pause");
 }
 
 // initialize SDL and OpenGL
@@ -48,11 +43,7 @@ bool init()
 	SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 3);
 
 	// Create Window
-	window = SDL_CreateWindow("OpenGL Lab 3",
-		SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED,
-		SCREEN_WIDTH, SCREEN_HEIGHT,
-		SDL_WINDOW_SHOWN | SDL_WINDOW_OPENGL | SDL_WINDOW_RESIZABLE);
-
+	window = SDL_CreateWindow("OpenGL Lab 1", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, SCREEN_WIDTH, SCREEN_HEIGHT, SDL_WINDOW_SHOWN | SDL_WINDOW_OPENGL | SDL_WINDOW_RESIZABLE);
 	if (window == NULL)
 	{
 		printf("Could not create window: %s\n", SDL_GetError());
@@ -84,12 +75,24 @@ bool init()
 	renderer = new Renderer();
 	bool engine_initialized = renderer->Init(SCREEN_WIDTH, SCREEN_HEIGHT);
 
+	//atexit(func);
+	
 	return engine_initialized;
+}
+
+
+void clean_up()
+{
+	delete renderer;
+
+	SDL_GL_DeleteContext(gContext);
+	SDL_DestroyWindow(window);
+	SDL_Quit();
 }
 
 int main(int argc, char *argv[])
 {
-	//Initialize SDL, glew, engine
+	//Initialize
 	if (init() == false)
 	{
 		system("pause");
@@ -118,6 +121,9 @@ int main(int argc, char *argv[])
 				// Key down events
 				if (event.key.keysym.sym == SDLK_ESCAPE) quit = true;
 				else if (event.key.keysym.sym == SDLK_r) renderer->ReloadShaders();
+				else if (event.key.keysym.sym == SDLK_t) renderer->SetRenderingMode(Renderer::RENDERING_MODE::TRIANGLES);
+				else if (event.key.keysym.sym == SDLK_l) renderer->SetRenderingMode(Renderer::RENDERING_MODE::LINES);
+				else if (event.key.keysym.sym == SDLK_p) renderer->SetRenderingMode(Renderer::RENDERING_MODE::POINTS);
 				else if (event.key.keysym.sym == SDLK_w || event.key.keysym.sym == SDLK_UP)
 				{
 					renderer->CameraMoveForward(true);
@@ -125,7 +131,7 @@ int main(int argc, char *argv[])
 				else if (event.key.keysym.sym == SDLK_s || event.key.keysym.sym == SDLK_DOWN)
 				{
 					renderer->CameraMoveBackWard(true);
-				}
+				}	
 				else if (event.key.keysym.sym == SDLK_a || event.key.keysym.sym == SDLK_LEFT)
 				{
 					renderer->CameraMoveLeft(true);
@@ -159,10 +165,9 @@ int main(int argc, char *argv[])
 			{
 				int x = event.motion.x;
 				int y = event.motion.y;
-
 				if (mouse_button_pressed)
 				{
-					renderer->CameraLook(prev_mouse_position - glm::vec2(x, y));
+					renderer->CameraLook(glm::vec2(x, y) - prev_mouse_position);
 					prev_mouse_position = glm::vec2(x, y);
 				}
 			}
@@ -176,6 +181,11 @@ int main(int argc, char *argv[])
 					prev_mouse_position = glm::vec2(x, y);
 				}
 			}
+			else if (event.type == SDL_MOUSEWHEEL)
+			{
+				int x = event.wheel.x;
+				int y = event.wheel.y;
+			}
 			else if (event.type == SDL_WINDOWEVENT)
 			{
 				if (event.window.event == SDL_WINDOWEVENT_RESIZED)
@@ -187,10 +197,7 @@ int main(int argc, char *argv[])
 
 		// Compute the ellapsed time
 		auto simulation_end = chrono::steady_clock::now();
-
-		float dt = chrono::duration <float>(
-			simulation_end - simulation_start).count(); // in seconds
-
+		float dt = chrono::duration <float>(simulation_end - simulation_start).count(); // in seconds
 		simulation_start = chrono::steady_clock::now();
 
 		// Update
