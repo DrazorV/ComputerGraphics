@@ -345,7 +345,7 @@ bool Renderer::InitGeometricMeshes()
 	m_wall_transformation_normal_matrix[1] = glm::mat4(glm::transpose(glm::inverse(glm::mat3(m_wall_transformation_matrix[1]))));
 	delete mesh;
 
-	mesh = loader.load("Assets/Objects/Corridor_Fork.obj");
+	mesh = loader.load("Assets/Objects/Cannon.obj"); 
 	if (mesh != nullptr)
 	{
 		m_rock_geometry = new GeometryNode();
@@ -353,11 +353,16 @@ bool Renderer::InitGeometricMeshes()
 	}
 	else
 		initialized = false;
+	
+	ball_translation = glm::translate(glm::mat4(1.0), glm::vec3(3, 0, -20));
+	m_wall_transformation_matrix[1] = glm::translate(glm::mat4(1.0), glm::vec3(-1, 0, 0)) * ball_translation;
+	m_wall_transformation_normal_matrix[1] = glm::mat4(glm::transpose(glm::inverse(glm::mat3(m_wall_transformation_matrix[1]))));
 	delete mesh;
 
-	mesh = loader.load("Assets/Objects/Cannon.obj"); 
-	glm::mat4 cannon_trans = glm::translate(glm::mat4(1.0), glm::vec3(-3, 0, -10));
-	m_cannon_geometry->Init(mesh);
+
+	
+	
+	
 	
 	delete mesh;
 	
