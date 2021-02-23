@@ -348,8 +348,8 @@ bool Renderer::InitGeometricMeshes()
 	mesh = loader.load("Assets/Objects/Cannon.obj"); 
 	if (mesh != nullptr)
 	{
-		m_rock_geometry = new GeometryNode();
-		m_rock_geometry->Init(mesh);
+		m_cannon_geometry = new GeometryNode();
+		m_cannon_geometry->Init(mesh);
 	}
 	else
 		initialized = false;
