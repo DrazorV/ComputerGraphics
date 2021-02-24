@@ -40,7 +40,10 @@ protected:
 	RENDERING_MODE m_rendering_mode;
 
 	// Lights
-	SpotLightNode m_spotlight_node;
+	//more spotlights apo edw meta sto cpp kai sto init lightsources
+
+	SpotLightNode* m_spotlight_node;
+	
 
 	// Meshes	
 	class GeometryNode**							m_wall_geometry;
