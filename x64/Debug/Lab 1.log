@@ -1,0 +1,22 @@
+﻿  Renderer.cpp
+C:\Users\jente\source\repos\DrazorV\ComputerGraphics\Source\Renderer.cpp(853,25): warning C4244: '=': conversion from 'int' to 'T', possible loss of data
+          with
+          [
+              T=float
+          ]
+C:\Users\jente\source\repos\DrazorV\ComputerGraphics\Source\Renderer.cpp(857,25): warning C4244: '=': conversion from 'int' to 'T', possible loss of data
+          with
+          [
+              T=float
+          ]
+C:\Users\jente\source\repos\DrazorV\ComputerGraphics\Source\Renderer.cpp(862,25): warning C4244: '=': conversion from 'int' to 'T', possible loss of data
+          with
+          [
+              T=float
+          ]
+C:\Users\jente\source\repos\DrazorV\ComputerGraphics\Source\Renderer.cpp(866,25): warning C4244: '=': conversion from 'int' to 'T', possible loss of data
+          with
+          [
+              T=float
+          ]
+  Lab 1.vcxproj -> C:\Users\jente\source\repos\DrazorV\ComputerGraphics\x64\Debug\ComputerGraphics.exe

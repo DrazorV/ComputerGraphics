@@ -1,1 +1,2 @@
 G:\Repositories\Visual Studio\ComputerGraphics\x64\Release\ComputerGraphics.exe
+C:\Users\jente\source\repos\DrazorV\ComputerGraphics\x64\Release\ComputerGraphics.exe

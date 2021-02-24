@@ -42,13 +42,7 @@ protected:
 	// Lights
 	SpotLightNode m_spotlight_node;
 
-	// Meshes
-	class GeometryNode*							m_cloister_geometry;
-	glm::mat4 m_cloister_transformation_matrix;
-	glm::mat4 m_cloister_transformation_normal_matrix;
-	class GeometryNode*							m_rock_geometry;
-	glm::mat4 m_rock_transformation_matrix;
-	glm::mat4 m_rock_transformation_normal_matrix;
+	// Meshes	
 	class GeometryNode**							m_wall_geometry;
 	glm::mat4* m_wall_transformation_matrix;
 	glm::mat4* m_wall_transformation_normal_matrix;
@@ -56,9 +50,36 @@ protected:
 	glm::mat4* m_corridors_transformation_matrix;
 	glm::mat4* m_corridors_transformation_normal_matrix;
 
-	class GeometryNode*							m_cannon_geometry;
-	glm::mat4 m_cannon_transformation_matrix;
-	glm::mat4 m_cannon_transformation_normal_matrix;
+	class GeometryNode**						m_cannon_geometry;
+	glm::mat4* m_cannon_transformation_matrix;
+	glm::mat4* m_cannon_transformation_normal_matrix;
+
+	class GeometryNode**							m_pipe_geometry;
+	glm::mat4* m_pipe_transformation_matrix;
+	glm::mat4* m_pipe_transformation_normal_matrix;
+
+	class GeometryNode**							 m_beam_geometry;
+	glm::mat4* m_beam_transformation_matrix;
+	glm::mat4* m_beam_transformation_normal_matrix;
+
+	class GeometryNode**							 m_cannon_mount_geometry;
+	glm::mat4* m_cannon_mount_transformation_matrix;
+	glm::mat4* m_cannon_mount_transformation_normal_matrix;
+	
+	class GeometryNode**							 m_corridor_fork_geometry;
+	glm::mat4* m_corridor_fork_transformation_matrix;
+	glm::mat4* m_corridor_fork_transformation_normal_matrix;
+
+	class GeometryNode**							 m_corridor_left_geometry;
+	glm::mat4* m_corridor_left_transformation_matrix;
+	glm::mat4* m_corridor_left_transformation_normal_matrix;
+
+	class GeometryNode**							 m_corridor_right_geometry;
+	glm::mat4* m_corridor_right_transformation_matrix;
+	glm::mat4* m_corridor_right_transformation_normal_matrix;
+
+
+
 
 
 

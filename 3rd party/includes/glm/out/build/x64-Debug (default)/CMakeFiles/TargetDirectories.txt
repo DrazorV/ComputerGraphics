@@ -1,0 +1,3 @@
+C:/Users/jente/source/repos/DrazorV/ComputerGraphics/3rd party/includes/glm/out/build/x64-Debug (default)/CMakeFiles/glm_dummy.dir
+C:/Users/jente/source/repos/DrazorV/ComputerGraphics/3rd party/includes/glm/out/build/x64-Debug (default)/CMakeFiles/edit_cache.dir
+C:/Users/jente/source/repos/DrazorV/ComputerGraphics/3rd party/includes/glm/out/build/x64-Debug (default)/CMakeFiles/rebuild_cache.dir
