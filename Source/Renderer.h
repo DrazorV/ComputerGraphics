@@ -79,11 +79,6 @@ protected:
 	glm::mat4* m_corridor_right_transformation_normal_matrix;
 
 
-
-
-
-
-
 	// Protected Functions
 	bool InitRenderingTechniques();
 	bool InitIntermediateShaderBuffers();
