@@ -1,0 +1,28 @@
+﻿  Renderer.cpp
+G:\Repositories\Visual Studio\ComputerGraphics\Source\Renderer.cpp(599,25): warning C4244: '=': conversion from 'int' to 'T', possible loss of data
+          with
+          [
+              T=float
+          ]
+G:\Repositories\Visual Studio\ComputerGraphics\Source\Renderer.cpp(603,25): warning C4244: '=': conversion from 'int' to 'T', possible loss of data
+          with
+          [
+              T=float
+          ]
+G:\Repositories\Visual Studio\ComputerGraphics\Source\Renderer.cpp(608,25): warning C4244: '=': conversion from 'int' to 'T', possible loss of data
+          with
+          [
+              T=float
+          ]
+G:\Repositories\Visual Studio\ComputerGraphics\Source\Renderer.cpp(612,25): warning C4244: '=': conversion from 'int' to 'T', possible loss of data
+          with
+          [
+              T=float
+          ]
+  main.cpp
+  Generating code
+  15 of 1093 functions ( 1.4%) were compiled, the rest were copied from previous compilation.
+    0 functions were new in current compilation
+    10 functions had inline decision re-evaluated but remain unchanged
+  Finished generating code
+  Lab 1.vcxproj -> G:\Repositories\Visual Studio\ComputerGraphics\x64\Release\ComputerGraphics.exe
