@@ -510,7 +510,7 @@ bool Renderer::InitGeometricMeshes()
 	
 	//load fork
 	mesh = loader.load("Assets/Objects/Corridor_Fork.obj");
-	for (int i = 0; i < 1; i++) {
+	for (int i = 0; i < 2; i++) {
 
 		if (mesh != nullptr)
 		{
@@ -638,7 +638,7 @@ void Renderer::RenderShadowMaps()
 			}
 		}
 		//draw fork
-		for (int i = 0; i < 1; i++) {
+		for (int i = 0; i < 2; i++) {
 			glBindVertexArray(m_corridor_fork_geometry[i]->m_vao);
 			glUniformMatrix4fv(m_spot_light_shadow_map_program["uniform_model_matrix"], 1, GL_FALSE, glm::value_ptr(m_corridor_fork_transformation_matrix[i]));
 			for (int j = 0; j < m_corridor_fork_geometry[i]->parts.size(); j++)
@@ -815,23 +815,26 @@ void Renderer::RenderGeometry()
 	}
 
 	//draw a fork
-	glBindVertexArray(m_corridor_fork_geometry[0]->m_vao);
-	glUniformMatrix4fv(m_geometry_rendering_program["uniform_model_matrix"], 1, GL_FALSE, glm::value_ptr(m_corridor_fork_transformation_matrix[0]));
-	glUniformMatrix4fv(m_geometry_rendering_program["uniform_normal_matrix"], 1, GL_FALSE, glm::value_ptr(m_corridor_fork_transformation_normal_matrix[0]));
-	for (int j = 0; j < m_corridor_fork_geometry[0]->parts.size(); j++)
-	{
-		glm::vec3 diffuseColor = m_corridor_fork_geometry[0]->parts[j].diffuseColor;
-		glm::vec3 specularColor = m_corridor_fork_geometry[0]->parts[j].specularColor;
-		float shininess = m_corridor_fork_geometry[0]->parts[j].shininess;
-		glUniform3f(m_geometry_rendering_program["uniform_diffuse"], diffuseColor.r, diffuseColor.g, diffuseColor.b);
-		glUniform3f(m_geometry_rendering_program["uniform_specular"], specularColor.r, specularColor.g, specularColor.b);
-		glUniform1f(m_geometry_rendering_program["uniform_shininess"], shininess);
-		glUniform1f(m_geometry_rendering_program["uniform_has_texture"], (m_corridor_fork_geometry[0]->parts[j].textureID > 0) ? 1.0f : 0.0f);
-		glBindTexture(GL_TEXTURE_2D, m_corridor_fork_geometry[0]->parts[j].textureID);
+	for (int i = 0; i < 2; i++) {
+		glBindVertexArray(m_corridor_fork_geometry[0]->m_vao);
+		glUniformMatrix4fv(m_geometry_rendering_program["uniform_model_matrix"], 1, GL_FALSE, glm::value_ptr(m_corridor_fork_transformation_matrix[0]));
+		glUniformMatrix4fv(m_geometry_rendering_program["uniform_normal_matrix"], 1, GL_FALSE, glm::value_ptr(m_corridor_fork_transformation_normal_matrix[0]));
+		for (int j = 0; j < m_corridor_fork_geometry[0]->parts.size(); j++)
+		{
+			glm::vec3 diffuseColor = m_corridor_fork_geometry[0]->parts[j].diffuseColor;
+			glm::vec3 specularColor = m_corridor_fork_geometry[0]->parts[j].specularColor;
+			float shininess = m_corridor_fork_geometry[0]->parts[j].shininess;
+			glUniform3f(m_geometry_rendering_program["uniform_diffuse"], diffuseColor.r, diffuseColor.g, diffuseColor.b);
+			glUniform3f(m_geometry_rendering_program["uniform_specular"], specularColor.r, specularColor.g, specularColor.b);
+			glUniform1f(m_geometry_rendering_program["uniform_shininess"], shininess);
+			glUniform1f(m_geometry_rendering_program["uniform_has_texture"], (m_corridor_fork_geometry[0]->parts[j].textureID > 0) ? 1.0f : 0.0f);
+			glBindTexture(GL_TEXTURE_2D, m_corridor_fork_geometry[0]->parts[j].textureID);
 
-		glDrawArrays(GL_TRIANGLES, m_corridor_fork_geometry[0]->parts[j].start_offset, m_corridor_fork_geometry[0]->parts[j].count);
+			glDrawArrays(GL_TRIANGLES, m_corridor_fork_geometry[0]->parts[j].start_offset, m_corridor_fork_geometry[0]->parts[j].count);
+		}
+
 	}
-
+	
 	//draw right corridor (first)
 	glBindVertexArray(m_corridor_right_geometry[0]->m_vao);
 	glUniformMatrix4fv(m_geometry_rendering_program["uniform_model_matrix"], 1, GL_FALSE, glm::value_ptr(m_corridor_right_transformation_matrix[0]));
