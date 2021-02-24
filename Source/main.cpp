@@ -12,8 +12,8 @@ SDL_Window * window;
 
 //OpenGL context 
 SDL_GLContext gContext;
-const int SCREEN_WIDTH = 800;
-const int SCREEN_HEIGHT = 640;
+const int SCREEN_WIDTH = 1280;
+const int SCREEN_HEIGHT = 720;
 
 //Event handler
 SDL_Event event;
@@ -165,21 +165,8 @@ int main(int argc, char *argv[])
 			{
 				int x = event.motion.x;
 				int y = event.motion.y;
-				if (mouse_button_pressed)
-				{
-					renderer->CameraLook(glm::vec2(x, y) - prev_mouse_position);
-					prev_mouse_position = glm::vec2(x, y);
-				}
-			}
-			else if (event.type == SDL_MOUSEBUTTONDOWN || event.type == SDL_MOUSEBUTTONUP)
-			{
-				if (event.button.button == SDL_BUTTON_LEFT)
-				{
-					int x = event.button.x;
-					int y = event.button.y;
-					mouse_button_pressed = (event.type == SDL_MOUSEBUTTONDOWN);
-					prev_mouse_position = glm::vec2(x, y);
-				}
+				renderer->CameraLook(glm::vec2(x, y) - prev_mouse_position);
+				prev_mouse_position = glm::vec2(x, y);
 			}
 			else if (event.type == SDL_MOUSEWHEEL)
 			{

@@ -1,20 +1,20 @@
 ﻿  Renderer.cpp
-C:\Users\jente\source\repos\DrazorV\ComputerGraphics\Source\Renderer.cpp(884,25): warning C4244: '=': conversion from 'int' to 'T', possible loss of data
+G:\Repositories\Visual Studio\ComputerGraphics\Source\Renderer.cpp(888,25): warning C4244: '=': conversion from 'int' to 'T', possible loss of data
           with
           [
               T=float
           ]
-C:\Users\jente\source\repos\DrazorV\ComputerGraphics\Source\Renderer.cpp(888,25): warning C4244: '=': conversion from 'int' to 'T', possible loss of data
+G:\Repositories\Visual Studio\ComputerGraphics\Source\Renderer.cpp(892,25): warning C4244: '=': conversion from 'int' to 'T', possible loss of data
           with
           [
               T=float
           ]
-C:\Users\jente\source\repos\DrazorV\ComputerGraphics\Source\Renderer.cpp(893,25): warning C4244: '=': conversion from 'int' to 'T', possible loss of data
+G:\Repositories\Visual Studio\ComputerGraphics\Source\Renderer.cpp(897,25): warning C4244: '=': conversion from 'int' to 'T', possible loss of data
           with
           [
               T=float
           ]
-C:\Users\jente\source\repos\DrazorV\ComputerGraphics\Source\Renderer.cpp(897,25): warning C4244: '=': conversion from 'int' to 'T', possible loss of data
+G:\Repositories\Visual Studio\ComputerGraphics\Source\Renderer.cpp(901,25): warning C4244: '=': conversion from 'int' to 'T', possible loss of data
           with
           [
               T=float
@@ -24,4 +24,4 @@ C:\Users\jente\source\repos\DrazorV\ComputerGraphics\Source\Renderer.cpp(897,25)
     0 functions were new in current compilation
     0 functions had inline decision re-evaluated but remain unchanged
   Finished generating code
-  Lab 1.vcxproj -> C:\Users\jente\source\repos\DrazorV\ComputerGraphics\x64\Release\ComputerGraphics.exe
+  Lab 1.vcxproj -> G:\Repositories\Visual Studio\ComputerGraphics\x64\Release\ComputerGraphics.exe

@@ -17,21 +17,44 @@ Renderer::Renderer()
 	m_corridors_transformation_matrix = new glm::mat4[4];
 	m_corridors_transformation_normal_matrix = new glm::mat4[4];
 	
+	//left corridor
+	m_corridor_left_geometry = new GeometryNode * [5];
+	for (int i = 0; i < 5; i++) {
+		m_corridor_left_geometry[i] = nullptr;
+	}
+	m_corridor_left_transformation_matrix = new glm::mat4[5];
+	m_corridor_left_transformation_normal_matrix = new glm::mat4[5];
+	//right corridor
+	m_corridor_right_geometry = new GeometryNode * [5];
+	for (int i = 0; i < 5; i++) {
+		m_corridor_right_geometry[i] = nullptr;
+	}
+	m_corridor_right_transformation_matrix = new glm::mat4[5];
+	m_corridor_right_transformation_normal_matrix = new glm::mat4[5];
+
+	//fork corridor
+	m_corridor_fork_geometry = new GeometryNode * [5];
+	for (int i = 0; i < 5; i++) {
+		m_corridor_fork_geometry[i] = nullptr;
+	}
+	m_corridor_fork_transformation_matrix = new glm::mat4[5];
+	m_corridor_fork_transformation_normal_matrix = new glm::mat4[5];
+
 	//alocation walls
-	m_wall_geometry = new GeometryNode * [2];
-	for(int i = 0; i<5; i++){
+	m_wall_geometry = new GeometryNode * [5];
+	for(int i = 0; i < 5 ; i++){
 		m_wall_geometry[i] = nullptr;
 	}
-	m_wall_transformation_matrix = new glm::mat4[2];
-	m_wall_transformation_normal_matrix = new glm::mat4[2];
+	m_wall_transformation_matrix = new glm::mat4[5];
+	m_wall_transformation_normal_matrix = new glm::mat4[5];
 	
-	//alocation cannon
+	//allocation cannon
 	m_cannon_geometry = new GeometryNode * [3];
 	for (int i = 0; i < 3; i++) {
 		m_cannon_geometry[i] = nullptr;
 	}
-	m_cannon_transformation_matrix = new glm::mat4[2];
-	m_cannon_transformation_normal_matrix = new glm::mat4[2];
+	m_cannon_transformation_matrix = new glm::mat4[3];
+	m_cannon_transformation_normal_matrix = new glm::mat4[3];
 	
 	//allocation cannon mounts	
 	m_cannon_mount_geometry = new GeometryNode * [2];
@@ -43,36 +66,12 @@ Renderer::Renderer()
 
 	//pipe
 	m_pipe_geometry = new GeometryNode * [10];
-	for (int i = 0; i < 8; i++) {
+	for (int i = 0; i < 10; i++) {
 		m_pipe_geometry[i] = nullptr;
 	}
-	m_pipe_transformation_matrix = new glm::mat4[2];
-	m_pipe_transformation_normal_matrix = new glm::mat4[2];
+	m_pipe_transformation_matrix = new glm::mat4[10];
+	m_pipe_transformation_normal_matrix = new glm::mat4[10];
 
-	//left corridor
-	m_corridor_left_geometry = new GeometryNode * [5];
-	for (int i = 0; i < 5; i++) {
-		m_corridor_left_geometry[i] = nullptr;
-	}
-	m_corridor_left_transformation_matrix = new glm::mat4[2];
-	m_corridor_left_transformation_normal_matrix = new glm::mat4[2];
-	//right corridor
-	m_corridor_right_geometry = new GeometryNode * [5];
-	for (int i = 0; i < 5; i++) {
-		m_corridor_right_geometry[i] = nullptr;
-	}
-	m_corridor_right_transformation_matrix = new glm::mat4[2];
-	m_corridor_right_transformation_normal_matrix = new glm::mat4[2];
-
-	//fork corridor
-	m_corridor_fork_geometry = new GeometryNode * [5];
-	for (int i = 0; i < 5; i++) {
-		m_corridor_fork_geometry[i] = nullptr;
-	}
-	m_corridor_fork_transformation_matrix = new glm::mat4[2];
-	m_corridor_fork_transformation_normal_matrix = new glm::mat4[2];
-	
-	
 	
 	
 	
@@ -97,25 +96,29 @@ Renderer::~Renderer()
 	glDeleteVertexArrays(1, &m_vao_fbo);
 	glDeleteBuffers(1, &m_vbo_fbo_vertices);
 	//delete corridors
-	delete m_corridors_transformation_matrix;
-	delete m_corridor_fork_transformation_matrix;
-	delete m_corridor_fork_transformation_normal_matrix;
-	delete m_corridors_transformation_normal_matrix;
+	
+	
 	for (int i = 0; i < 4; i++) {
 		delete m_corridors_geometry[i];
 	}
+	delete m_corridors_geometry;
+	delete m_corridors_transformation_matrix;
+	delete m_corridors_transformation_normal_matrix;
+
 	for (int i = 0; i < 5; i++) {
 		delete m_corridor_fork_geometry[i];
 	}
-	delete m_corridors_geometry;
 	delete m_corridor_fork_geometry;
+	delete m_corridor_fork_transformation_matrix;
+	delete m_corridor_fork_transformation_normal_matrix;
+	
 	//delete left 
 	for (int i = 0; i < 5; i++) {
 		delete m_corridor_left_geometry;
 	}
 	delete m_corridor_left_geometry;
 	delete m_corridor_left_transformation_matrix;
-	delete  m_corridor_left_transformation_normal_matrix;
+	delete m_corridor_left_transformation_normal_matrix;
 	//right corridor
 	
 	for (int i = 0; i < 5; i++) {
@@ -126,12 +129,13 @@ Renderer::~Renderer()
 	delete m_corridor_right_transformation_normal_matrix;
 
 	//delete walls
-	delete m_wall_transformation_matrix;
-	delete m_wall_transformation_normal_matrix;
 	for (int i = 0; i < 5; i++) {
 		delete m_wall_geometry[i];
 	}
 	delete m_wall_geometry;
+	delete m_wall_transformation_matrix;
+	delete m_wall_transformation_normal_matrix;
+
 	//delete cannons
 	for (int i = 0; i < 3; i++) {
 		delete m_cannon_geometry[i];
@@ -147,7 +151,7 @@ Renderer::~Renderer()
 	delete m_cannon_mount_transformation_matrix;
 	delete m_cannon_mount_transformation_normal_matrix;
 	//delete pipes
-	for (int i = 0; i < 8; i++) {
+	for (int i = 0; i < 10; i++) {
 		delete m_pipe_geometry[i];
 	}
 	delete m_pipe_geometry;
@@ -200,7 +204,7 @@ bool Renderer::Init(int SCREEN_WIDTH, int SCREEN_HEIGHT)
 
 void Renderer::Update(float dt)
 {
-	float movement_speed = 7.5f;
+	float movement_speed = 50.5f;
 	glm::vec3 direction = glm::normalize(m_camera_target_position - m_camera_position);
 
 	m_camera_position += m_camera_movement.x * movement_speed * direction * dt;
