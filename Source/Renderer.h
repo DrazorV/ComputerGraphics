@@ -26,12 +26,12 @@ protected:
 	glm::vec3										m_camera_up_vector;
 	glm::vec2										m_camera_movement;
 	glm::vec2										m_camera_look_angle_destination;
-	
+
 	// Geometry Rendering Intermediate Buffer
 	GLuint m_fbo;
 	GLuint m_fbo_depth_texture;
 	GLuint m_fbo_texture;
-	
+
 	GLuint m_vao_fbo, m_vbo_fbo_vertices;
 
 	float m_continous_time;
@@ -40,41 +40,44 @@ protected:
 	RENDERING_MODE m_rendering_mode;
 
 	// Lights
-	SpotLightNode m_spotlight_node;
+	//more spotlights apo edw meta sto cpp kai sto init lightsources
+
+	SpotLightNode* m_spotlight_node;
+
 
 	// Meshes	
-	class GeometryNode**							m_wall_geometry;
+	class GeometryNode** m_wall_geometry;
 	glm::mat4* m_wall_transformation_matrix;
 	glm::mat4* m_wall_transformation_normal_matrix;
-	class GeometryNode**							m_corridors_geometry;
+	class GeometryNode** m_corridors_geometry;
 	glm::mat4* m_corridors_transformation_matrix;
 	glm::mat4* m_corridors_transformation_normal_matrix;
 
-	class GeometryNode**						m_cannon_geometry;
+	class GeometryNode** m_cannon_geometry;
 	glm::mat4* m_cannon_transformation_matrix;
 	glm::mat4* m_cannon_transformation_normal_matrix;
 
-	class GeometryNode**							m_pipe_geometry;
+	class GeometryNode** m_pipe_geometry;
 	glm::mat4* m_pipe_transformation_matrix;
 	glm::mat4* m_pipe_transformation_normal_matrix;
 
-	class GeometryNode**							 m_beam_geometry;
+	class GeometryNode** m_beam_geometry;
 	glm::mat4* m_beam_transformation_matrix;
 	glm::mat4* m_beam_transformation_normal_matrix;
 
-	class GeometryNode**							 m_cannon_mount_geometry;
+	class GeometryNode** m_cannon_mount_geometry;
 	glm::mat4* m_cannon_mount_transformation_matrix;
 	glm::mat4* m_cannon_mount_transformation_normal_matrix;
-	
-	class GeometryNode**							 m_corridor_fork_geometry;
+
+	class GeometryNode** m_corridor_fork_geometry;
 	glm::mat4* m_corridor_fork_transformation_matrix;
 	glm::mat4* m_corridor_fork_transformation_normal_matrix;
 
-	class GeometryNode**							 m_corridor_left_geometry;
+	class GeometryNode** m_corridor_left_geometry;
 	glm::mat4* m_corridor_left_transformation_matrix;
 	glm::mat4* m_corridor_left_transformation_normal_matrix;
 
-	class GeometryNode**							 m_corridor_right_geometry;
+	class GeometryNode** m_corridor_right_geometry;
 	glm::mat4* m_corridor_right_transformation_matrix;
 	glm::mat4* m_corridor_right_transformation_normal_matrix;
 
@@ -103,7 +106,7 @@ public:
 	void										RenderShadowMaps();
 	void										RenderGeometry();
 	void										RenderToOutFB();
-	
+
 	// Set functions
 	void										SetRenderingMode(RENDERING_MODE mode);
 
@@ -112,7 +115,7 @@ public:
 	void										CameraMoveBackWard(bool enable);
 	void										CameraMoveLeft(bool enable);
 	void										CameraMoveRight(bool enable);
-	void										CameraLook(glm::vec2 lookDir);	
+	void										CameraLook(glm::vec2 lookDir);
 };
 
 #endif
