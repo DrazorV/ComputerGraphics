@@ -647,6 +647,7 @@ void Renderer::RenderShadowMaps()
 			}
 		}
 		//right corridor (right on first fork)
+		for (int i = 0; i < 1; i++) {}
 		glBindVertexArray(m_corridor_right_geometry[0]->m_vao);
 		glUniformMatrix4fv(m_spot_light_shadow_map_program["uniform_model_matrix"], 1, GL_FALSE, glm::value_ptr(m_cannon_transformation_matrix[0]));
 		for (int j = 0; j < m_corridor_right_geometry[0]->parts.size(); j++)
