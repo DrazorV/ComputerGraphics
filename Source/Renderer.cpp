@@ -14,12 +14,12 @@ Renderer::Renderer()
 	m_spotlight_node = new SpotLightNode[5];
 
 	//allocation corridors
-	m_corridors_geometry = new GeometryNode * [10];
-	for (int i = 0; i < 10; i++) {
+	m_corridors_geometry = new GeometryNode * [5];
+	for (int i = 0; i < 5; i++) {
 		m_corridors_geometry[i] = nullptr;
 	}
-	m_corridors_transformation_matrix = new glm::mat4[10];
-	m_corridors_transformation_normal_matrix = new glm::mat4[10];
+	m_corridors_transformation_matrix = new glm::mat4[5];
+	m_corridors_transformation_normal_matrix = new glm::mat4[5];
 
 	//left corridor
 	m_corridor_left_geometry = new GeometryNode * [5];
@@ -46,13 +46,12 @@ Renderer::Renderer()
 
 	//alocation walls
 	
-	m_wall_geometry = new GeometryNode * [5];
-
-	for (int i = 0; i < 5; i++) {
+	m_wall_geometry = new GeometryNode * [6];
+	for (int i = 0; i < 6; i++) {
 		m_wall_geometry[i] = nullptr;
 	}
-	m_wall_transformation_matrix = new glm::mat4[5];
-	m_wall_transformation_normal_matrix = new glm::mat4[5];
+	m_wall_transformation_matrix = new glm::mat4[6];
+	m_wall_transformation_normal_matrix = new glm::mat4[6];
 
 	//allocation cannon
 	m_cannon_geometry = new GeometryNode * [3];
@@ -110,7 +109,7 @@ Renderer::~Renderer()
 	// delete g_buffer
 	glDeleteTextures(1, &m_fbo_texture);
 	glDeleteFramebuffers(1, &m_fbo);
-	delete m_cannon_geometry;
+	
 
 	// delete common data
 	glDeleteVertexArrays(1, &m_vao_fbo);
@@ -120,10 +119,11 @@ Renderer::~Renderer()
 	for (int i = 0; i < 2; i++) {
 		delete m_iris_geometry[i];
 	}
+	delete m_iris_geometry;
 	delete m_iris_transformation_matrix;
 	delete m_iris_transformation_normal_matrix;
 
-	for (int i = 0; i < 10; i++) {
+	for (int i = 0; i < 5; i++) {
 		delete m_corridors_geometry[i];
 	}
 	delete m_corridors_geometry;
@@ -154,7 +154,7 @@ Renderer::~Renderer()
 	delete m_corridor_right_transformation_normal_matrix;
 
 	//delete walls
-	for (int i = 0; i < 5; i++) {
+	for (int i = 0; i < 6; i++) {
 		delete m_wall_geometry[i];
 	}
 	delete m_wall_geometry;
@@ -624,8 +624,27 @@ bool Renderer::InitGeometricMeshes()
 	wall_trans = glm::translate(glm::mat4(1.0), glm::vec3(11, 0, 80));
 	m_wall_transformation_matrix[3] = glm::translate(glm::mat4(1.0), glm::vec3(-1, 0, 0)) * wall_trans;
 	m_wall_transformation_normal_matrix[3] = glm::mat4(glm::transpose(glm::inverse(glm::mat3(m_wall_transformation_matrix[3]))));
+	for (int i = 4; i < 6; i++) {
+		if (mesh != nullptr)
+		{
+			m_wall_geometry[i] = new GeometryNode();
+			m_wall_geometry[i]->Init(mesh);
+
+		}
+		else
+			initialized = false;
+	}
+	wall_trans = glm::translate(glm::mat4(1.0), glm::vec3(-6, 0, 120));
+	m_wall_transformation_matrix[4] = glm::translate(glm::mat4(1.0), glm::vec3(-1, 0, 0)) * wall_trans;
+	m_wall_transformation_normal_matrix[4] = glm::mat4(glm::transpose(glm::inverse(glm::mat3(m_wall_transformation_matrix[4]))));
+
+	wall_trans = glm::translate(glm::mat4(1.0), glm::vec3(0, 0, 120));
+	m_wall_transformation_matrix[5] = glm::translate(glm::mat4(1.0), glm::vec3(-1, 0, 0)) * wall_trans;
+	m_wall_transformation_normal_matrix[5] = glm::mat4(glm::transpose(glm::inverse(glm::mat3(m_wall_transformation_matrix[5]))));
+
 
 	delete mesh;
+
 
 	//load fork
 	mesh = loader.load("Assets/Objects/Corridor_Fork.obj");
@@ -644,6 +663,7 @@ bool Renderer::InitGeometricMeshes()
 		m_corridor_fork_transformation_matrix[i] = glm::translate(glm::mat4(1.0), glm::vec3(-1, 0, 0)) * corridors_trans * R;
 		m_corridors_transformation_normal_matrix[i] = glm::mat4(glm::transpose(glm::inverse(glm::mat3(m_corridors_transformation_matrix[i]))));
 	}
+
 	delete mesh;
 	//load left
 	mesh = loader.load("Assets/Objects/Corridor_Left.obj");
@@ -798,7 +818,7 @@ void Renderer::RenderShadowMaps()
 				}
 			}
 			// draw the Door
-			for (int i = 0; i < 4; i++) {
+			for (int i = 0; i < 6; i++) {
 				glBindVertexArray(m_wall_geometry[i]->m_vao);
 				glUniformMatrix4fv(m_spot_light_shadow_map_program["uniform_model_matrix"], 1, GL_FALSE, glm::value_ptr(m_wall_transformation_matrix[i]));
 				for (int j = 0; j < m_wall_geometry[i]->parts.size(); j++)
@@ -960,7 +980,7 @@ void Renderer::RenderGeometry()
 
 
 	// draw the Door
-	for (int i = 0; i < 4; i++) {
+	for (int i = 0; i < 6; i++) {
 		glBindVertexArray(m_wall_geometry[i]->m_vao);
 		glUniformMatrix4fv(m_geometry_rendering_program["uniform_model_matrix"], 1, GL_FALSE, glm::value_ptr(m_wall_transformation_matrix[i]));
 		glUniformMatrix4fv(m_geometry_rendering_program["uniform_normal_matrix"], 1, GL_FALSE, glm::value_ptr(m_wall_transformation_normal_matrix[i]));

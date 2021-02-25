@@ -12,8 +12,8 @@ SDL_Window * window;
 
 //OpenGL context 
 SDL_GLContext gContext;
-const int SCREEN_WIDTH = 1280;
-const int SCREEN_HEIGHT = 720;
+const int SCREEN_WIDTH = 1600;
+const int SCREEN_HEIGHT = 1200;
 
 //Event handler
 SDL_Event event;
