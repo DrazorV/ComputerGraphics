@@ -14,12 +14,12 @@ Renderer::Renderer()
 	m_spotlight_node = new SpotLightNode[5];
 
 	//allocation corridors
-	m_corridors_geometry = new GeometryNode * [4];
-	for (int i = 0; i < 4; i++) {
+	m_corridors_geometry = new GeometryNode * [10];
+	for (int i = 0; i < 10; i++) {
 		m_corridors_geometry[i] = nullptr;
 	}
-	m_corridors_transformation_matrix = new glm::mat4[4];
-	m_corridors_transformation_normal_matrix = new glm::mat4[4];
+	m_corridors_transformation_matrix = new glm::mat4[10];
+	m_corridors_transformation_normal_matrix = new glm::mat4[10];
 
 	//left corridor
 	m_corridor_left_geometry = new GeometryNode * [5];
@@ -75,10 +75,16 @@ Renderer::Renderer()
 	m_pipe_transformation_matrix = new glm::mat4[24];
 	m_pipe_transformation_normal_matrix = new glm::mat4[24];
 
-
+	//allocation iris
+	m_iris_geometry = new GeometryNode * [2];
+	for (int i = 0; i < 2; i++) {
+		m_iris_geometry[i] = nullptr;
+	}
+	m_iris_transformation_matrix = new glm::mat4[2];
+	m_iris_transformation_normal_matrix = new glm::mat4[2];
 	//beam
 	m_beam_geometry = new GeometryNode * [5];
-	for (int i = 0; i < 5; i++) {
+	for (int i = 0; i < 2; i++) {
 		m_beam_geometry[i] = nullptr;
 	}
 	m_beam_transformation_matrix = new glm::mat4[5];
@@ -109,8 +115,13 @@ Renderer::~Renderer()
 	glDeleteBuffers(1, &m_vbo_fbo_vertices);
 	//delete corridors
 
+	for (int i = 0; i < 2; i++) {
+		delete m_iris_geometry[i];
+	}
+	delete m_iris_transformation_matrix;
+	delete m_iris_transformation_normal_matrix;
 
-	for (int i = 0; i < 4; i++) {
+	for (int i = 0; i < 10; i++) {
 		delete m_corridors_geometry[i];
 	}
 	delete m_corridors_geometry;
@@ -397,10 +408,10 @@ bool Renderer::ResizeBuffers(int width, int height)
 bool Renderer::InitLightSources()
 {
 	for (int i = 0; i < 5; i++) {
-		m_spotlight_node[i].SetPosition(glm::vec3(6, 7, -3 + i * 10));
-		m_spotlight_node[i].SetTarget(glm::vec3(0, 2, 0 + i * 10));
+		m_spotlight_node[i].SetPosition(glm::vec3(6, 7, -3 + i * 20));
+		m_spotlight_node[i].SetTarget(glm::vec3(0, 2, 0 + i * 20));
 		m_spotlight_node[i].SetColor(40.0f * glm::vec3(1.0, 1.0, 1.0));
-		m_spotlight_node[i].SetConeSize(50, 70);
+		m_spotlight_node[i].SetConeSize(100, 170);
 		m_spotlight_node[i].CastShadow(true);
 	}
 	return true;
@@ -427,43 +438,68 @@ bool Renderer::InitGeometricMeshes()
 		}
 		else
 			initialized = false;
-
 	}
+
+	m_corridors_geometry[4] = new GeometryNode();
+	m_corridors_geometry[4]->Init(mesh);
+	glm::mat4 corridors_trans = glm::translate(glm::mat4(1.0), glm::vec3(11, 0, 120));
+
+	m_corridors_transformation_matrix[4] = glm::translate(glm::mat4(1.0), glm::vec3(-1, 0, 0)) * corridors_trans;
+	m_corridors_transformation_normal_matrix[4] = glm::mat4(glm::transpose(glm::inverse(glm::mat3(m_corridors_transformation_matrix[4]))));
+	
 	delete mesh;
 	//load cannon mounts
 	mesh = loader.load("Assets/Objects/CannonMount.obj");
 
-
-	if (mesh != nullptr)
-	{
-		m_cannon_mount_geometry[0] = new GeometryNode();
-		m_cannon_mount_geometry[0]->Init(mesh);
+	for (int i = 0; i < 2; i++) {
+		if (mesh != nullptr)
+		{
+			m_cannon_mount_geometry[i] = new GeometryNode();
+			m_cannon_mount_geometry[i]->Init(mesh);
+		}
+		else
+			initialized = false;
 	}
-	else
-		initialized = false;
-	glm::mat4 RotY = glm::rotate(glm::mat4(1.f), glm::radians(90.f), glm::vec3(0.f, 1.f, 0.f));
-	glm::mat4 cannonMount_translation = glm::translate(glm::mat4(1.0), glm::vec3(1, 2.8, 60));
-	m_cannon_mount_transformation_matrix[0] = glm::translate(glm::mat4(1.0), glm::vec3(1, 1, 1)) * cannonMount_translation;
+	glm::mat4 RotY = glm::rotate(glm::mat4(1.f), glm::radians(90.f), glm::vec3(1.f, 0.f, 0.f));
+	
+	glm::mat4 cannonMount_translation = glm::translate(glm::mat4(1.0), glm::vec3(1, 2, 78.8));
+	m_cannon_mount_transformation_matrix[0] = glm::translate(glm::mat4(1.0), glm::vec3(1, 1, 1)) * cannonMount_translation*RotY;
 	m_cannon_mount_transformation_normal_matrix[0] = glm::mat4(glm::transpose(glm::inverse(glm::mat3(m_cannon_mount_transformation_matrix[0]))));
+	RotY = glm::rotate(glm::mat4(1.f), glm::radians(180.f), glm::vec3(1.f, 0.f, 0.f));
+	cannonMount_translation = glm::translate(glm::mat4(1.0), glm::vec3(-2.25, -1.75, 13));
+	m_cannon_mount_transformation_matrix[1] = glm::translate(glm::mat4(1.0), glm::vec3(1, 0, 1)) * cannonMount_translation*RotY;
+	m_cannon_mount_transformation_normal_matrix[1] = glm::mat4(glm::transpose(glm::inverse(glm::mat3(m_cannon_mount_transformation_matrix[1]))));
+
 
 	delete mesh;
 
 	//cannon
 	mesh = loader.load("Assets/Objects/Cannon.obj");
-	if (mesh != nullptr)
-	{
-		m_cannon_geometry[0] = new GeometryNode();
-		m_cannon_geometry[0]->Init(mesh);
+	for (int i = 0; i < 3; i++) {
+		if (mesh != nullptr)
+		{
+			m_cannon_geometry[i] = new GeometryNode();
+			m_cannon_geometry[i]->Init(mesh);
+		}
+		else
+			initialized = false;
 	}
-	else
-		initialized = false;
-	glm::mat4 RotX = glm::rotate(glm::mat4(1.f), glm::radians(60.f), glm::vec3(1.f, 0.f, 0.f));
-	glm::mat4 RotY = glm::rotate(glm::mat4(1.f), glm::radians(180.f), glm::vec3(0.f, 1.f, 0.f));
+	glm::mat4 RotX = glm::rotate(glm::mat4(1.f), glm::radians(35.f), glm::vec3(1.f, 0.f, 0.f));
+	RotY = glm::rotate(glm::mat4(1.f), glm::radians(180.f), glm::vec3(0.f, 1.f, 0.f));
 	glm::mat4 RotZ = glm::rotate(glm::mat4(1.f), glm::radians(180.f), glm::vec3(0.f, 0.f, 1.f));
 	
 	glm::mat4 cannon_translation = glm::translate(glm::mat4(1.0), glm::vec3(1, 3, 78.7));
-	m_cannon_transformation_matrix[0] = glm::translate(glm::mat4(1.0), glm::vec3(1, 0, 0)) * cannon_translation*RotY;//* RotY*RotX;
+	m_cannon_transformation_matrix[0] = glm::translate(glm::mat4(1.0), glm::vec3(1, 0, 0)) * cannon_translation*RotY*RotX;
 	m_cannon_transformation_normal_matrix[0] = glm::mat4(glm::transpose(glm::inverse(glm::mat3(m_cannon_transformation_matrix[0]))));
+	
+	RotX = glm::rotate(glm::mat4(1.f), glm::radians(-2.5f), glm::vec3(1.f, 0.f, 0.f));
+	cannon_translation = glm::translate(glm::mat4(1.0), glm::vec3(-3, -0.5, 14));
+	m_cannon_transformation_matrix[1] = glm::translate(glm::mat4(1.0), glm::vec3(1, 0, 0)) * cannon_translation * RotY * RotX;
+	m_cannon_transformation_normal_matrix[1] = glm::mat4(glm::transpose(glm::inverse(glm::mat3(m_cannon_transformation_matrix[1]))));
+	
+	cannon_translation = glm::translate(glm::mat4(1.0), glm::vec3(-1.5, -0.5, 14));
+	m_cannon_transformation_matrix[2] = glm::translate(glm::mat4(1.0), glm::vec3(1, 0, 0)) * cannon_translation * RotY * RotX;
+	m_cannon_transformation_normal_matrix[2] = glm::mat4(glm::transpose(glm::inverse(glm::mat3(m_cannon_transformation_matrix[2]))));
 	delete mesh;
 
 	//load pipes
@@ -541,7 +577,7 @@ bool Renderer::InitGeometricMeshes()
 		else
 			initialized = false;
 	}
-
+	
 	glm::mat4 wall_trans = glm::translate(glm::mat4(1.0), glm::vec3(-3, 0, -20));
 	m_wall_transformation_matrix[0] = glm::translate(glm::mat4(1.0), glm::vec3(-1, 0, 0)) * wall_trans;
 	m_wall_transformation_normal_matrix[0] = glm::mat4(glm::transpose(glm::inverse(glm::mat3(m_wall_transformation_matrix[0]))));
@@ -564,7 +600,7 @@ bool Renderer::InitGeometricMeshes()
 	m_wall_transformation_matrix[2] = glm::translate(glm::mat4(1.0), glm::vec3(-1, 0, 0)) * wall_trans;
 	m_wall_transformation_normal_matrix[2] = glm::mat4(glm::transpose(glm::inverse(glm::mat3(m_wall_transformation_matrix[2]))));
 
-	wall_trans = glm::translate(glm::mat4(1.0), glm::vec3(8, 0, 80));
+	wall_trans = glm::translate(glm::mat4(1.0), glm::vec3(11, 0, 80));
 	m_wall_transformation_matrix[3] = glm::translate(glm::mat4(1.0), glm::vec3(-1, 0, 0)) * wall_trans;
 	m_wall_transformation_normal_matrix[3] = glm::mat4(glm::transpose(glm::inverse(glm::mat3(m_wall_transformation_matrix[3]))));
 
@@ -588,6 +624,25 @@ bool Renderer::InitGeometricMeshes()
 		m_corridors_transformation_normal_matrix[i] = glm::mat4(glm::transpose(glm::inverse(glm::mat3(m_corridors_transformation_matrix[i]))));
 	}
 	delete mesh;
+	//load left
+	mesh = loader.load("Assets/Objects/Corridor_Left.obj");
+	for (int i = 0; i < 1; i++) {
+
+		if (mesh != nullptr)
+		{
+			m_corridor_left_geometry[i] = new GeometryNode();
+			m_corridor_left_geometry[i]->Init(mesh);
+		}
+		else
+			initialized = false;	
+	}
+
+	corridors_trans = glm::translate(glm::mat4(1.0), glm::vec3( 9, 0, 100)); // scaling factor for each axis
+	m_corridor_left_transformation_matrix[0] = glm::translate(glm::mat4(1.0), glm::vec3(1, 0, 0)) * corridors_trans;
+	m_corridor_left_transformation_normal_matrix[0] = glm::mat4(glm::transpose(glm::inverse(glm::mat3(m_corridor_left_transformation_matrix[0]))));
+
+	delete mesh;
+
 	//load corridor right(right on first fork)
 	mesh = loader.load("Assets/Objects/Corridor_Right.obj");
 	if (mesh != nullptr)
@@ -605,7 +660,7 @@ bool Renderer::InitGeometricMeshes()
 
 	//load beams
 	mesh = loader.load("Assets/Objects/Beam.obj");
-	for (int i = 0; i < 1; i++) {
+	for (int i = 0; i < 2; i++) {
 		if (mesh != nullptr)
 		{
 			m_beam_geometry[i] = new GeometryNode();
@@ -617,10 +672,42 @@ bool Renderer::InitGeometricMeshes()
 	}
 
 	glm::mat4 beam_trans = glm::translate(glm::mat4(1.0), glm::vec3(-5, -3.5, 10));
-	glm::mat4 Rotb = glm::rotate(glm::mat4(1.f), glm::radians(135.f), glm::vec3(0.f, 1.f, 0.f));
-	glm::mat4 Rotc = glm::rotate(glm::mat4(1.f), glm::radians(90.f), glm::vec3(1.f, 0.f, 0.f));
-	m_beam_transformation_matrix[0] = glm::translate(glm::mat4(1.0), glm::vec3(1, 0, 1)) * beam_trans*Rotb*Rotc;
+	RotY = glm::rotate(glm::mat4(1.f), glm::radians(135.f), glm::vec3(0.f, 1.f, 0.f));
+	RotX = glm::rotate(glm::mat4(1.f), glm::radians(90.f), glm::vec3(1.f, 0.f, 0.f));
+	m_beam_transformation_matrix[0] = glm::translate(glm::mat4(1.0), glm::vec3(1, 0, 1)) * beam_trans*RotY*RotX;
 	m_beam_transformation_normal_matrix[0] = glm::mat4(glm::transpose(glm::inverse(glm::mat3(m_beam_transformation_matrix[0]))));
+
+
+	RotZ = glm::rotate(glm::mat4(1.f), glm::radians(90.f), glm::vec3(0.f, 0.f, 1.f));
+	m_beam_transformation_matrix[1] = glm::translate(glm::mat4(1.0), glm::vec3(4, 0,70)) * beam_trans*RotZ; //* Rotb * Rotc;
+	m_beam_transformation_normal_matrix[1] = glm::mat4(glm::transpose(glm::inverse(glm::mat3(m_beam_transformation_matrix[1]))));
+	delete mesh;
+
+
+	//load iris
+	mesh = loader.load("Assets/Objects/Iris.obj");
+
+	for (int i = 0; i < 2; i++) {
+		if (mesh != nullptr)
+		{
+			m_iris_geometry[i] = new GeometryNode();
+			m_iris_geometry[i]->Init(mesh);
+		}
+		else
+			initialized = false;
+	}
+	RotY = glm::rotate(glm::mat4(1.f), glm::radians(180.f), glm::vec3(0.f, 1.f, 0.f));
+	glm::mat4 iris_translation = glm::translate(glm::mat4(1.0), glm::vec3(1, -4.10, 79));
+	m_iris_transformation_matrix[0] = glm::translate(glm::mat4(1.0), glm::vec3(1, 1, 1)) * iris_translation * RotY;
+	m_iris_transformation_normal_matrix[0] = glm::mat4(glm::transpose(glm::inverse(glm::mat3(m_iris_transformation_matrix[0]))));
+	
+	iris_translation = glm::translate(glm::mat4(1.0), glm::vec3(-3, 0, -19));
+	m_iris_transformation_matrix[1] = glm::translate(glm::mat4(1.0), glm::vec3(1, 0, 0)) * iris_translation;
+	m_iris_transformation_normal_matrix[1] = glm::mat4(glm::transpose(glm::inverse(glm::mat3(m_iris_transformation_matrix[1]))));
+
+	delete mesh;
+
+
 	return initialized;
 }
 
@@ -672,7 +759,7 @@ void Renderer::RenderShadowMaps()
 
 
 			//draw the Array of Corridors
-			for (int i = 0; i < 4; i++) {
+			for (int i = 0; i < 5; i++) {
 				glBindVertexArray(m_corridors_geometry[i]->m_vao);
 				glUniformMatrix4fv(m_spot_light_shadow_map_program["uniform_model_matrix"], 1, GL_FALSE, glm::value_ptr(m_corridors_transformation_matrix[i]));
 				for (int j = 0; j < m_corridors_geometry[i]->parts.size(); j++)
@@ -680,7 +767,15 @@ void Renderer::RenderShadowMaps()
 					glDrawArrays(GL_TRIANGLES, m_corridors_geometry[i]->parts[j].start_offset, m_corridors_geometry[i]->parts[j].count);
 				}
 			}
-
+			//draw iris
+			for (int i = 0; i < 2; i++) {
+				glBindVertexArray(m_iris_geometry[i]->m_vao);
+				glUniformMatrix4fv(m_spot_light_shadow_map_program["uniform_model_matrix"], 1, GL_FALSE, glm::value_ptr(m_iris_transformation_matrix[i]));
+				for (int j = 0; j < m_iris_geometry[i]->parts.size(); j++)
+				{
+					glDrawArrays(GL_TRIANGLES, m_iris_geometry[i]->parts[j].start_offset, m_iris_geometry[i]->parts[j].count);
+				}
+			}
 			// draw the Door
 			for (int i = 0; i < 4; i++) {
 				glBindVertexArray(m_wall_geometry[i]->m_vao);
@@ -691,7 +786,7 @@ void Renderer::RenderShadowMaps()
 				}
 			}
 			//draw beam
-			for (int i = 0; i < 1; i++) {
+			for (int i = 0; i < 2; i++) {
 				glBindVertexArray(m_beam_geometry[i]->m_vao);
 				glUniformMatrix4fv(m_spot_light_shadow_map_program["uniform_model_matrix"], 1, GL_FALSE, glm::value_ptr(m_beam_transformation_matrix[i]));
 				for (int j = 0; j < m_beam_geometry[i]->parts.size(); j++)
@@ -700,15 +795,18 @@ void Renderer::RenderShadowMaps()
 				}
 			}
 			//cannon
-			glBindVertexArray(m_cannon_geometry[0]->m_vao);
-			glUniformMatrix4fv(m_spot_light_shadow_map_program["uniform_model_matrix"], 1, GL_FALSE, glm::value_ptr(m_cannon_transformation_matrix[0]));
-			for (int j = 0; j < m_cannon_geometry[0]->parts.size(); j++)
-			{
-				glDrawArrays(GL_TRIANGLES, m_cannon_geometry[0]->parts[j].start_offset, m_cannon_geometry[0]->parts[j].count);
+			for (int i = 0; i < 3; i++) {
+				glBindVertexArray(m_cannon_geometry[i]->m_vao);
+				glUniformMatrix4fv(m_spot_light_shadow_map_program["uniform_model_matrix"], 1, GL_FALSE, glm::value_ptr(m_cannon_transformation_matrix[i]));
+				for (int j = 0; j < m_cannon_geometry[i]->parts.size(); j++)
+				{
+					glDrawArrays(GL_TRIANGLES, m_cannon_geometry[i]->parts[j].start_offset, m_cannon_geometry[i]->parts[j].count);
+				}
 			}
+			
 
 			// draw the cannon mount
-			for (int i = 0; i < 1; i++) {
+			for (int i = 0; i < 2; i++) {
 				glBindVertexArray(m_cannon_mount_geometry[i]->m_vao);
 				glUniformMatrix4fv(m_spot_light_shadow_map_program["uniform_model_matrix"], 1, GL_FALSE, glm::value_ptr(m_cannon_mount_transformation_matrix[i]));
 				for (int j = 0; j < m_cannon_mount_geometry[i]->parts.size(); j++)
@@ -732,6 +830,15 @@ void Renderer::RenderShadowMaps()
 				for (int j = 0; j < m_corridor_fork_geometry[i]->parts.size(); j++)
 				{
 					glDrawArrays(GL_TRIANGLES, m_corridor_fork_geometry[i]->parts[j].start_offset, m_corridor_fork_geometry[i]->parts[j].count);
+				}
+			}
+			//draw left
+			for (int i = 0; i < 1; i++) {
+				glBindVertexArray(m_corridor_left_geometry[i]->m_vao);
+				glUniformMatrix4fv(m_spot_light_shadow_map_program["uniform_model_matrix"], 1, GL_FALSE, glm::value_ptr(m_corridor_left_transformation_matrix[i]));
+				for (int j = 0; j < m_corridor_left_geometry[i]->parts.size(); j++)
+				{
+					glDrawArrays(GL_TRIANGLES, m_corridor_left_geometry[i]->parts[j].start_offset, m_corridor_left_geometry[i]->parts[j].count);
 				}
 			}
 			//right corridor (right on first fork)
@@ -809,7 +916,7 @@ void Renderer::RenderGeometry()
 
 
 	// draw the Array of Corridors
-	for (int i = 0; i < 4; i++) {
+	for (int i = 0; i < 5; i++) {
 
 		glBindVertexArray(m_corridors_geometry[i]->m_vao);
 		glUniformMatrix4fv(m_geometry_rendering_program["uniform_model_matrix"], 1, GL_FALSE, glm::value_ptr(m_corridors_transformation_matrix[i]));
@@ -870,7 +977,7 @@ void Renderer::RenderGeometry()
 		}
 	}
 	//draw beam
-	for (int i = 0; i < 1; i++) {
+	for (int i = 0; i < 2; i++) {
 		glBindVertexArray(m_beam_geometry[i]->m_vao);
 		glUniformMatrix4fv(m_geometry_rendering_program["uniform_model_matrix"], 1, GL_FALSE, glm::value_ptr(m_beam_transformation_matrix[i]));
 		glUniformMatrix4fv(m_geometry_rendering_program["uniform_normal_matrix"], 1, GL_FALSE, glm::value_ptr(m_beam_transformation_normal_matrix[i]));
@@ -889,7 +996,7 @@ void Renderer::RenderGeometry()
 		}
 	}
 	//draw cannon mount
-	for (int i = 0; i < 1; i++) {
+	for (int i = 0; i < 2; i++) {
 		glBindVertexArray(m_cannon_mount_geometry[i]->m_vao);
 		glUniformMatrix4fv(m_geometry_rendering_program["uniform_model_matrix"], 1, GL_FALSE, glm::value_ptr(m_cannon_mount_transformation_matrix[i]));
 		glUniformMatrix4fv(m_geometry_rendering_program["uniform_normal_matrix"], 1, GL_FALSE, glm::value_ptr(m_cannon_mount_transformation_normal_matrix[i]));
@@ -907,24 +1014,46 @@ void Renderer::RenderGeometry()
 			glDrawArrays(GL_TRIANGLES, m_cannon_mount_geometry[i]->parts[j].start_offset, m_cannon_mount_geometry[i]->parts[j].count);
 		}
 	}
-	//draw cannon
-	glBindVertexArray(m_cannon_geometry[0]->m_vao);
-	glUniformMatrix4fv(m_geometry_rendering_program["uniform_model_matrix"], 1, GL_FALSE, glm::value_ptr(m_cannon_transformation_matrix[0]));
-	glUniformMatrix4fv(m_geometry_rendering_program["uniform_normal_matrix"], 1, GL_FALSE, glm::value_ptr(m_cannon_transformation_normal_matrix[0]));
-	for (int j = 0; j < m_cannon_geometry[0]->parts.size(); j++)
-	{
-		glm::vec3 diffuseColor = m_cannon_geometry[0]->parts[j].diffuseColor;
-		glm::vec3 specularColor = m_cannon_geometry[0]->parts[j].specularColor;
-		float shininess = m_cannon_geometry[0]->parts[j].shininess;
-		glUniform3f(m_geometry_rendering_program["uniform_diffuse"], diffuseColor.r, diffuseColor.g, diffuseColor.b);
-		glUniform3f(m_geometry_rendering_program["uniform_specular"], specularColor.r, specularColor.g, specularColor.b);
-		glUniform1f(m_geometry_rendering_program["uniform_shininess"], shininess);
-		glUniform1f(m_geometry_rendering_program["uniform_has_texture"], (m_cannon_geometry[0]->parts[j].textureID > 0) ? 1.0f : 0.0f);
-		glBindTexture(GL_TEXTURE_2D, m_cannon_geometry[0]->parts[j].textureID);
 
-		glDrawArrays(GL_TRIANGLES, m_cannon_geometry[0]->parts[j].start_offset, m_cannon_geometry[0]->parts[j].count);
+	//draw cannon
+	for (int i = 0; i <3; i++) {
+		glBindVertexArray(m_cannon_geometry[i]->m_vao);
+		glUniformMatrix4fv(m_geometry_rendering_program["uniform_model_matrix"], 1, GL_FALSE, glm::value_ptr(m_cannon_transformation_matrix[i]));
+		glUniformMatrix4fv(m_geometry_rendering_program["uniform_normal_matrix"], 1, GL_FALSE, glm::value_ptr(m_cannon_transformation_normal_matrix[i]));
+		for (int j = 0; j < m_cannon_geometry[i]->parts.size(); j++)
+		{
+			glm::vec3 diffuseColor = m_cannon_geometry[i]->parts[j].diffuseColor;
+			glm::vec3 specularColor = m_cannon_geometry[i]->parts[j].specularColor;
+			float shininess = m_cannon_geometry[i]->parts[j].shininess;
+			glUniform3f(m_geometry_rendering_program["uniform_diffuse"], diffuseColor.r, diffuseColor.g, diffuseColor.b);
+			glUniform3f(m_geometry_rendering_program["uniform_specular"], specularColor.r, specularColor.g, specularColor.b);
+			glUniform1f(m_geometry_rendering_program["uniform_shininess"], shininess);
+			glUniform1f(m_geometry_rendering_program["uniform_has_texture"], (m_cannon_geometry[i]->parts[j].textureID > 0) ? 1.0f : 0.0f);
+			glBindTexture(GL_TEXTURE_2D, m_cannon_geometry[i]->parts[j].textureID);
+
+			glDrawArrays(GL_TRIANGLES, m_cannon_geometry[i]->parts[j].start_offset, m_cannon_geometry[i]->parts[j].count);
+		}
 	}
 
+	//draw iris
+	for (int i = 0; i < 2; i++) {
+		glBindVertexArray(m_iris_geometry[i]->m_vao);
+		glUniformMatrix4fv(m_geometry_rendering_program["uniform_model_matrix"], 1, GL_FALSE, glm::value_ptr(m_iris_transformation_matrix[i]));
+		glUniformMatrix4fv(m_geometry_rendering_program["uniform_normal_matrix"], 1, GL_FALSE, glm::value_ptr(m_iris_transformation_normal_matrix[i]));
+		for (int j = 0; j < m_iris_geometry[i]->parts.size(); j++)
+		{
+			glm::vec3 diffuseColor = m_iris_geometry[i]->parts[j].diffuseColor;
+			glm::vec3 specularColor = m_iris_geometry[i]->parts[j].specularColor;
+			float shininess = m_iris_geometry[i]->parts[j].shininess;
+			glUniform3f(m_geometry_rendering_program["uniform_diffuse"], diffuseColor.r, diffuseColor.g, diffuseColor.b);
+			glUniform3f(m_geometry_rendering_program["uniform_specular"], specularColor.r, specularColor.g, specularColor.b);
+			glUniform1f(m_geometry_rendering_program["uniform_shininess"], shininess);
+			glUniform1f(m_geometry_rendering_program["uniform_has_texture"], (m_iris_geometry[i]->parts[j].textureID > 0) ? 1.0f : 0.0f);
+			glBindTexture(GL_TEXTURE_2D, m_iris_geometry[i]->parts[j].textureID);
+
+			glDrawArrays(GL_TRIANGLES, m_iris_geometry[i]->parts[j].start_offset, m_iris_geometry[i]->parts[j].count);
+		}
+	}
 	//draw a fork
 	for (int i = 0; i < 2; i++) {
 		glBindVertexArray(m_corridor_fork_geometry[i]->m_vao);
@@ -942,6 +1071,25 @@ void Renderer::RenderGeometry()
 			glBindTexture(GL_TEXTURE_2D, m_corridor_fork_geometry[i]->parts[j].textureID);
 
 			glDrawArrays(GL_TRIANGLES, m_corridor_fork_geometry[i]->parts[j].start_offset, m_corridor_fork_geometry[i]->parts[j].count);
+		}
+	}
+	//draw left
+	for (int i = 0; i < 1; i++) {
+		glBindVertexArray(m_corridor_left_geometry[i]->m_vao);
+		glUniformMatrix4fv(m_geometry_rendering_program["uniform_model_matrix"], 1, GL_FALSE, glm::value_ptr(m_corridor_left_transformation_matrix[i]));
+		glUniformMatrix4fv(m_geometry_rendering_program["uniform_normal_matrix"], 1, GL_FALSE, glm::value_ptr(m_corridor_left_transformation_normal_matrix[i]));
+		for (int j = 0; j < m_corridor_left_geometry[i]->parts.size(); j++)
+		{
+			glm::vec3 diffuseColor = m_corridor_left_geometry[i]->parts[j].diffuseColor;
+			glm::vec3 specularColor = m_corridor_left_geometry[i]->parts[j].specularColor;
+			float shininess = m_corridor_left_geometry[i]->parts[j].shininess;
+			glUniform3f(m_geometry_rendering_program["uniform_diffuse"], diffuseColor.r, diffuseColor.g, diffuseColor.b);
+			glUniform3f(m_geometry_rendering_program["uniform_specular"], specularColor.r, specularColor.g, specularColor.b);
+			glUniform1f(m_geometry_rendering_program["uniform_shininess"], shininess);
+			glUniform1f(m_geometry_rendering_program["uniform_has_texture"], (m_corridor_left_geometry[i]->parts[j].textureID > 0) ? 1.0f : 0.0f);
+			glBindTexture(GL_TEXTURE_2D, m_corridor_left_geometry[i]->parts[j].textureID);
+
+			glDrawArrays(GL_TRIANGLES, m_corridor_left_geometry[i]->parts[j].start_offset, m_corridor_left_geometry[i]->parts[j].count);
 		}
 	}
 	//draw right corridor (first)

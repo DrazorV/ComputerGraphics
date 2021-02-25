@@ -44,7 +44,6 @@ protected:
 
 	SpotLightNode* m_spotlight_node;
 
-
 	// Meshes	
 	class GeometryNode** m_wall_geometry;
 	glm::mat4* m_wall_transformation_matrix;
@@ -81,6 +80,9 @@ protected:
 	glm::mat4* m_corridor_right_transformation_matrix;
 	glm::mat4* m_corridor_right_transformation_normal_matrix;
 
+	class GeometryNode** m_iris_geometry;
+	glm::mat4* m_iris_transformation_matrix;
+	glm::mat4* m_iris_transformation_normal_matrix;
 
 	// Protected Functions
 	bool InitRenderingTechniques();
