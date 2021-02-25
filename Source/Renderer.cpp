@@ -542,6 +542,25 @@ bool Renderer::InitGeometricMeshes()
 		m_pipe_transformation_normal_matrix[j] = glm::mat4(glm::transpose(glm::inverse(glm::mat3(m_pipe_transformation_matrix[j]))));
 		j++;
 	}
+	for (int i = 8; i < 16; i++) {
+
+		if (mesh != nullptr)
+		{
+			m_pipe_geometry[i] = new GeometryNode();
+			m_pipe_geometry[i]->Init(mesh);
+		}
+		else
+			initialized = false;
+
+	}
+
+	for (int i = -10; i < 70; i = i + 10) {
+
+		glm::mat4 pipe_translation = glm::translate(glm::mat4(1.0), glm::vec3(-1.5, 5.0, i));
+		m_pipe_transformation_matrix[j] = glm::translate(glm::mat4(1.0), glm::vec3(1, 0, 0)) * pipe_translation;
+		m_pipe_transformation_normal_matrix[j] = glm::mat4(glm::transpose(glm::inverse(glm::mat3(m_pipe_transformation_matrix[j]))));
+		j++;
+	}
 
 	for (int i = 16; i < 24; i++) {
 
