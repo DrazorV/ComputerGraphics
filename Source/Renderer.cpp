@@ -45,7 +45,9 @@ Renderer::Renderer()
 	m_corridor_fork_transformation_normal_matrix = new glm::mat4[5];
 
 	//alocation walls
+	
 	m_wall_geometry = new GeometryNode * [5];
+
 	for (int i = 0; i < 5; i++) {
 		m_wall_geometry[i] = nullptr;
 	}
