@@ -19,6 +19,7 @@ public:
 
 protected:
 	int												m_screen_width, m_screen_height;
+	glm::mat4										ball_rotation;
 	glm::mat4										m_view_matrix;
 	glm::mat4										m_projection_matrix;
 	glm::vec3										m_camera_position;

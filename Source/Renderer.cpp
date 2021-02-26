@@ -62,12 +62,12 @@ Renderer::Renderer()
 	m_cannon_transformation_normal_matrix = new glm::mat4[3];
 
 	//allocation cannon mounts	
-	m_cannon_mount_geometry = new GeometryNode * [2];
-	for (int i = 0; i < 2; i++) {
+	m_cannon_mount_geometry = new GeometryNode * [4];
+	for (int i = 0; i <4; i++) {
 		m_cannon_mount_geometry[i] = nullptr;
 	}
-	m_cannon_mount_transformation_matrix = new glm::mat4[2];
-	m_cannon_mount_transformation_normal_matrix = new glm::mat4[2];
+	m_cannon_mount_transformation_matrix = new glm::mat4[4];
+	m_cannon_mount_transformation_normal_matrix = new glm::mat4[4];
 	//pipes
 	m_pipe_geometry = new GeometryNode * [24];
 	for (int i = 0; i < 24; i++) {
@@ -84,12 +84,12 @@ Renderer::Renderer()
 	m_iris_transformation_matrix = new glm::mat4[10];
 	m_iris_transformation_normal_matrix = new glm::mat4[10];
 	//beam
-	m_beam_geometry = new GeometryNode * [5];
-	for (int i = 0; i < 5; i++) {
+	m_beam_geometry = new GeometryNode * [8];
+	for (int i = 0; i < 8; i++) {
 		m_beam_geometry[i] = nullptr;
 	}
-	m_beam_transformation_matrix = new glm::mat4[5];
-	m_beam_transformation_normal_matrix = new glm::mat4[5];
+	m_beam_transformation_matrix = new glm::mat4[8];
+	m_beam_transformation_normal_matrix = new glm::mat4[8];
 
 	m_fbo = 0;
 	m_fbo_texture = 0;
@@ -169,7 +169,7 @@ Renderer::~Renderer()
 	delete m_cannon_transformation_matrix;
 	delete m_cannon_transformation_normal_matrix;
 	//delete cannon mounts
-	for (int i = 0; i < 2; i++) {
+	for (int i = 0; i < 4; i++) {
 		delete m_cannon_mount_geometry[i];
 	}
 	delete m_cannon_mount_geometry;
@@ -183,7 +183,7 @@ Renderer::~Renderer()
 	delete m_pipe_transformation_matrix;
 	delete m_pipe_transformation_normal_matrix;
 	//delete beams
-	for (int i = 0; i < 5; i++) {
+	for (int i = 0; i < 8; i++) {
 		delete m_beam_geometry[i];
 	}
 	delete m_beam_geometry;
@@ -236,7 +236,7 @@ bool Renderer::Init(int SCREEN_WIDTH, int SCREEN_HEIGHT)
 
 void Renderer::Update(float dt)
 {
-	float movement_speed = 50.5f;
+	float movement_speed = 25.5f;
 	glm::vec3 direction = glm::normalize(m_camera_target_position - m_camera_position);
 
 	m_camera_position += m_camera_movement.x * movement_speed * direction * dt;
@@ -262,9 +262,8 @@ void Renderer::Update(float dt)
 	m_continous_time += dt;
 
 	// update meshes tranformations
-	glm::mat4 ball_translation = glm::translate(glm::mat4(1.0), glm::vec3(2, 1, 0));
 	glm::mat4 ball_rotation = glm::rotate(glm::mat4(1.0), 1.5f * m_continous_time, glm::vec3(0, 1, 0));
-	glm::mat4 ball_scale = glm::scale(glm::mat4(1.0), glm::vec3(0.0625));
+
 }
 
 bool Renderer::InitCommonItems()
@@ -452,7 +451,7 @@ bool Renderer::InitGeometricMeshes()
 	//load cannon mounts
 	mesh = loader.load("Assets/Objects/CannonMount.obj");
 
-	for (int i = 0; i < 2; i++) {
+	for (int i = 0; i <4; i++) {
 		if (mesh != nullptr)
 		{
 			m_cannon_mount_geometry[i] = new GeometryNode();
@@ -466,11 +465,19 @@ bool Renderer::InitGeometricMeshes()
 	glm::mat4 cannonMount_translation = glm::translate(glm::mat4(1.0), glm::vec3(1, 2, 78.8));
 	m_cannon_mount_transformation_matrix[0] = glm::translate(glm::mat4(1.0), glm::vec3(1, 1, 1)) * cannonMount_translation * RotY;
 	m_cannon_mount_transformation_normal_matrix[0] = glm::mat4(glm::transpose(glm::inverse(glm::mat3(m_cannon_mount_transformation_matrix[0]))));
+	
 	RotY = glm::rotate(glm::mat4(1.f), glm::radians(180.f), glm::vec3(1.f, 0.f, 0.f));
 	cannonMount_translation = glm::translate(glm::mat4(1.0), glm::vec3(-2.25, -1.75, 13));
 	m_cannon_mount_transformation_matrix[1] = glm::translate(glm::mat4(1.0), glm::vec3(1, 0, 1)) * cannonMount_translation * RotY;
 	m_cannon_mount_transformation_normal_matrix[1] = glm::mat4(glm::transpose(glm::inverse(glm::mat3(m_cannon_mount_transformation_matrix[1]))));
+	
+	m_cannon_mount_transformation_matrix[2] = glm::translate(glm::mat4(1.0), glm::vec3(0,0,10))* RotY;
+	m_cannon_mount_transformation_normal_matrix[2] = glm::mat4(glm::transpose(glm::inverse(glm::mat3(m_cannon_mount_transformation_matrix[2]))));
 
+	
+	
+	
+	//glm::translate(glm::mat4(1.0), glm::vec3(2.2, -12, 120));
 
 	delete mesh;
 
@@ -495,7 +502,7 @@ bool Renderer::InitGeometricMeshes()
 
 	RotX = glm::rotate(glm::mat4(1.f), glm::radians(-2.5f), glm::vec3(1.f, 0.f, 0.f));
 	cannon_translation = glm::translate(glm::mat4(1.0), glm::vec3(-3, -0.5, 14));
-	m_cannon_transformation_matrix[1] = glm::translate(glm::mat4(1.0), glm::vec3(1, 0, 0)) * cannon_translation * RotY * RotX;
+	m_cannon_transformation_matrix[1] = glm::translate(glm::mat4(1.0), glm::vec3(1, 0, 0)) * cannon_translation * RotY * RotX* ball_rotation;
 	m_cannon_transformation_normal_matrix[1] = glm::mat4(glm::transpose(glm::inverse(glm::mat3(m_cannon_transformation_matrix[1]))));
 
 	cannon_translation = glm::translate(glm::mat4(1.0), glm::vec3(-1.5, -0.5, 14));
@@ -685,7 +692,7 @@ bool Renderer::InitGeometricMeshes()
 
 	//load beams
 	mesh = loader.load("Assets/Objects/Beam.obj");
-	for (int i = 0; i < 5; i++) {
+	for (int i = 0; i < 7; i++) {
 		if (mesh != nullptr)
 		{
 			m_beam_geometry[i] = new GeometryNode();
@@ -713,12 +720,19 @@ bool Renderer::InitGeometricMeshes()
 	m_beam_transformation_normal_matrix[2] = glm::mat4(glm::transpose(glm::inverse(glm::mat3(m_beam_transformation_matrix[2]))));
 
 	RotZ = glm::rotate(glm::mat4(1.f), glm::radians(90.f), glm::vec3(0.f, 0.f, 1.f));
-	m_beam_transformation_matrix[3] = glm::translate(glm::mat4(1.0), glm::vec3(9, 0, 130)) * beam_trans * RotZ; //* Rotb * Rotc;
+	m_beam_transformation_matrix[3] = glm::translate(glm::mat4(1.0), glm::vec3(9, 5, 130)) * beam_trans * RotZ; //* Rotb * Rotc;
 	m_beam_transformation_normal_matrix[3] = glm::mat4(glm::transpose(glm::inverse(glm::mat3(m_beam_transformation_matrix[3]))));
 
-	m_beam_transformation_matrix[4] = glm::translate(glm::mat4(1.0), glm::vec3(14, 3, 100)) * beam_trans * RotZ*RotX; //* Rotb * Rotc;
+	m_beam_transformation_matrix[4] = glm::translate(glm::mat4(1.0), glm::vec3(-5, 3, 100)) * beam_trans * RotZ*RotX; //* Rotb * Rotc;
 	m_beam_transformation_normal_matrix[4] = glm::mat4(glm::transpose(glm::inverse(glm::mat3(m_beam_transformation_matrix[4]))));
 
+	RotY = glm::rotate(glm::mat4(1.f), glm::radians(135.f), glm::vec3(0.f, 1.f, 0.f));
+	RotX = glm::rotate(glm::mat4(1.f), glm::radians(90.f), glm::vec3(1.f, 0.f, 0.f));
+	m_beam_transformation_matrix[5] = glm::translate(glm::mat4(1.0), glm::vec3(-5, -3.5, 100)) * RotY * RotX;
+	m_beam_transformation_normal_matrix[5] = glm::mat4(glm::transpose(glm::inverse(glm::mat3(m_beam_transformation_matrix[5]))));
+
+	m_beam_transformation_matrix[6] = glm::translate(glm::mat4(1.0), glm::vec3(2.2, -12, 120));
+	m_beam_transformation_normal_matrix[6] = glm::mat4(glm::transpose(glm::inverse(glm::mat3(m_beam_transformation_matrix[6]))));
 	delete mesh;
 
 
@@ -829,7 +843,7 @@ void Renderer::RenderShadowMaps()
 				}
 			}
 			//draw beam
-			for (int i = 0; i < 5; i++) {
+			for (int i = 0; i < 7; i++) {
 				glBindVertexArray(m_beam_geometry[i]->m_vao);
 				glUniformMatrix4fv(m_spot_light_shadow_map_program["uniform_model_matrix"], 1, GL_FALSE, glm::value_ptr(m_beam_transformation_matrix[i]));
 				for (int j = 0; j < m_beam_geometry[i]->parts.size(); j++)
@@ -849,7 +863,7 @@ void Renderer::RenderShadowMaps()
 
 
 			// draw the cannon mount
-			for (int i = 0; i < 2; i++) {
+			for (int i = 0; i < 3; i++) {
 				glBindVertexArray(m_cannon_mount_geometry[i]->m_vao);
 				glUniformMatrix4fv(m_spot_light_shadow_map_program["uniform_model_matrix"], 1, GL_FALSE, glm::value_ptr(m_cannon_mount_transformation_matrix[i]));
 				for (int j = 0; j < m_cannon_mount_geometry[i]->parts.size(); j++)
@@ -1020,7 +1034,7 @@ void Renderer::RenderGeometry()
 		}
 	}
 	//draw beam
-	for (int i = 0; i < 5; i++) {
+	for (int i = 0; i < 7; i++) {
 		glBindVertexArray(m_beam_geometry[i]->m_vao);
 		glUniformMatrix4fv(m_geometry_rendering_program["uniform_model_matrix"], 1, GL_FALSE, glm::value_ptr(m_beam_transformation_matrix[i]));
 		glUniformMatrix4fv(m_geometry_rendering_program["uniform_normal_matrix"], 1, GL_FALSE, glm::value_ptr(m_beam_transformation_normal_matrix[i]));
@@ -1039,7 +1053,7 @@ void Renderer::RenderGeometry()
 		}
 	}
 	//draw cannon mount
-	for (int i = 0; i < 2; i++) {
+	for (int i = 0; i < 3; i++) {
 		glBindVertexArray(m_cannon_mount_geometry[i]->m_vao);
 		glUniformMatrix4fv(m_geometry_rendering_program["uniform_model_matrix"], 1, GL_FALSE, glm::value_ptr(m_cannon_mount_transformation_matrix[i]));
 		glUniformMatrix4fv(m_geometry_rendering_program["uniform_normal_matrix"], 1, GL_FALSE, glm::value_ptr(m_cannon_mount_transformation_normal_matrix[i]));
