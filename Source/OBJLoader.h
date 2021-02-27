@@ -2,7 +2,8 @@
 
 #include "glm/glm.hpp"
 #include <vector>
-#include <string>
+#include <unordered_map>
+#include <future>
 #include "GeometricMesh.h"
 
 struct OBJMaterial
@@ -16,16 +17,17 @@ struct OBJMaterial
 	int illumination_model;
 
 	//texures
-	std::string texture;
+	std::string textureDiffuse;
 	std::string textureSpecular;
 	std::string textureAmbient;
 	std::string textureBump;
+	std::string textureNormal;
 	std::string textureSpecularity;
 	std::string textureOpacity;
 
 	//constructor
 	OBJMaterial()
-	{ 
+	{
 		ambient[0] = 0.2f;
 		ambient[1] = 0.2f;
 		ambient[2] = 0.2f;
@@ -81,7 +83,7 @@ public:
 	OBJLoader(void);
 	~OBJLoader(void);
 
-	class GeometricMesh * load(const char* filename);
+	class GeometricMesh* load(const char* filename);
 
 private:
 	void read_vertex(const char* buff);
@@ -98,6 +100,8 @@ private:
 	void generateDataFromFaces();
 
 	void calculate_flat_normals();
-	void calculate_avg_normals(std::vector<glm::vec3> &shared_vertices, std::vector<glm::vec3> &normals, std::vector<unsigned int> &elements);
+	void calculate_avg_normals(std::vector<glm::vec3>& shared_vertices, std::vector<glm::vec3>& normals, std::vector<unsigned int>& elements);
+
+	void calculate_tangents();
 };
 

@@ -61,7 +61,7 @@
     <ClCompile Include="Source\Tools.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="CollidableNode.cpp">
+    <ClCompile Include="Source\CollidableNode.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

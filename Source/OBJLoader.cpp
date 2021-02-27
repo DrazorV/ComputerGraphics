@@ -35,7 +35,7 @@ GeometricMesh* OBJLoader::load(const char* filename)
 	char buff[1024];
 	char str[1024];
 
-	FILE *pFile;
+	FILE* pFile;
 	folderPath = Tools::GetFolderPath(filename);
 	pFile = fopen(filename, "r");
 	if (pFile == NULL)
@@ -80,7 +80,7 @@ GeometricMesh* OBJLoader::load(const char* filename)
 	generateDataFromFaces();
 
 	// close the last object
-	mesh->objects.back().end = static_cast<unsigned int>(mesh->vertices.size());
+	mesh->objects.back().end = (unsigned int)mesh->vertices.size();
 
 	printf("Done reading OBJ file \n");
 
@@ -96,6 +96,15 @@ GeometricMesh* OBJLoader::load(const char* filename)
 		if (flatShading) calculate_flat_normals();
 		else calculate_avg_normals(shared_vertices, mesh->normals, elements);
 	}
+
+	// check if we loaded an normal map
+	if (std::find_if(mesh->materials.begin(), mesh->materials.end(), [](OBJMaterial mat) { return mat.textureBump.length() > 0; }) != mesh->materials.end() ||
+		std::find_if(mesh->materials.begin(), mesh->materials.end(), [](OBJMaterial mat) { return mat.textureNormal.length() > 0; }) != mesh->materials.end())
+	{
+		calculate_tangents();
+		hasNormals = true;
+	}
+
 	return mesh;
 }
 
@@ -162,7 +171,7 @@ void OBJLoader::read_face(const char* buff)
 	*
 	*/
 
-	int number_of_faces = static_cast<int>(vertices_pointers.size() - 3) + 1;
+	int number_of_faces = (int)(vertices_pointers.size() - 3) + 1;
 
 	for (int face = 0; face < number_of_faces; face++)
 	{
@@ -263,7 +272,7 @@ void OBJLoader::generateDataFromFaces()
 	const glm::ivec3 zeroVec(0);
 
 	for (int face = 0; face < shared_faces.size(); face++)
-	{		
+	{
 		mesh->vertices.push_back(shared_vertices[shared_faces[face].vertices.x]);
 		mesh->vertices.push_back(shared_vertices[shared_faces[face].vertices.y]);
 		mesh->vertices.push_back(shared_vertices[shared_faces[face].vertices.z]);
@@ -286,7 +295,7 @@ void OBJLoader::generateDataFromFaces()
 				mesh->textureCoord.emplace_back(0.f);
 				mesh->textureCoord.emplace_back(0.f);
 			}
-		}		
+		}
 	}
 }
 
@@ -305,7 +314,7 @@ void OBJLoader::calculate_flat_normals()
 }
 
 
-void OBJLoader::calculate_avg_normals(std::vector<glm::vec3> &shared_vertices, std::vector<glm::vec3> &normals, std::vector<unsigned int> &elements)
+void OBJLoader::calculate_avg_normals(std::vector<glm::vec3>& shared_vertices, std::vector<glm::vec3>& normals, std::vector<unsigned int>& elements)
 {
 	std::vector<int> nb_seen;
 	std::vector<glm::vec3> temp_normals;
@@ -336,7 +345,7 @@ void OBJLoader::calculate_avg_normals(std::vector<glm::vec3> &shared_vertices, s
 		}
 	}
 	// add normals
-	for (unsigned int i = 0; i<elements.size(); i += 3)
+	for (unsigned int i = 0; i < elements.size(); i += 3)
 	{
 		unsigned int ia = elements[i];
 		unsigned int ib = elements[i + 1];
@@ -346,6 +355,60 @@ void OBJLoader::calculate_avg_normals(std::vector<glm::vec3> &shared_vertices, s
 		normals.push_back(temp_normals[ic]);
 	}
 
+}
+
+void OBJLoader::calculate_tangents()
+{
+	mesh->tangents.clear();
+
+	for (unsigned int i = 0; i < mesh->vertices.size(); i += 3)
+	{
+		glm::vec3& v0 = mesh->vertices[i + 0];
+		glm::vec3& v1 = mesh->vertices[i + 1];
+		glm::vec3& v2 = mesh->vertices[i + 2];
+
+		glm::vec2& uv0 = mesh->textureCoord[i + 0];
+		glm::vec2& uv1 = mesh->textureCoord[i + 1];
+		glm::vec2& uv2 = mesh->textureCoord[i + 2];
+
+		// edges of the triangle : position delta
+		glm::vec3 deltaPos1 = v1 - v0;
+		glm::vec3 deltaPos2 = v2 - v0;
+
+		// uv delta
+		glm::vec2 deltaUV1 = uv1 - uv0;
+		glm::vec2 deltaUV2 = uv2 - uv0;
+
+		float r = 1.0f / (deltaUV1.x * deltaUV2.y - deltaUV1.y * deltaUV2.x);
+		glm::vec3 tangent = (deltaPos1 * deltaUV2.y - deltaPos2 * deltaUV1.y) * r;
+		glm::vec3 b = (deltaPos2 * deltaUV1.x - deltaPos1 * deltaUV2.x) * r;
+
+		// set the same tangent for all the three vertices of the triangle.
+		// they will be merged later
+
+		mesh->tangents.push_back(tangent);
+		mesh->tangents.push_back(tangent);
+		mesh->tangents.push_back(tangent);
+
+		mesh->bitangents.push_back(b);
+		mesh->bitangents.push_back(b);
+		mesh->bitangents.push_back(b);
+	}
+
+	for (unsigned int i = 0; i < mesh->vertices.size(); i += 1)
+	{
+		glm::vec3& n = mesh->normals[i];
+		glm::vec3& t = mesh->tangents[i];
+		glm::vec3& b = mesh->bitangents[i];
+
+		// Gram-Schmidt orthogonalize
+		t = glm::normalize(t - n * glm::dot(n, t));
+
+		// Calculate handedness
+		if (glm::dot(glm::cross(n, t), b) < 0.0f) {
+			t = t * -1.0f;
+		}
+	}
 }
 
 void OBJLoader::read_usemtl(const char* buff, int& currentMaterialID)
@@ -359,12 +422,12 @@ void OBJLoader::read_usemtl(const char* buff, int& currentMaterialID)
 	if (mesh->objects.back().material_id > 0)
 	{
 		// set where the current object ends
-		mesh->objects.back().end = 3 * static_cast<unsigned int>(shared_faces.size());
+		mesh->objects.back().end = 3 * (unsigned int)shared_faces.size();
 		//create a new MeshObject
 		GeometricMesh::MeshObject mo;
 		mo.name = mesh->objects.back().name;
 		mo.material_id = mesh->findMaterialID(str);
-		mo.start = 3 * static_cast<unsigned int>(shared_faces.size());
+		mo.start = 3 * (unsigned int)shared_faces.size();
 		mesh->objects.push_back(mo);
 	}
 	else
@@ -390,11 +453,11 @@ void OBJLoader::add_new_group(const char* buff, int& currentMaterialID)
 	sscanf(buff, "%s", name);
 
 	// end the previous MeshObject
-	mesh->objects.back().end = 3 * static_cast<unsigned int>(shared_faces.size());
+	mesh->objects.back().end = 3 * (unsigned int)shared_faces.size();
 
 	// create a new object
 	GeometricMesh::MeshObject mo;
-	mo.start = 3 * static_cast<unsigned int>(shared_faces.size());
+	mo.start = 3 * (unsigned int)shared_faces.size();
 	mo.material_id = currentMaterialID;
 	mo.name = name;
 	mesh->objects.push_back(mo);
@@ -417,7 +480,7 @@ void OBJLoader::parseMTL(const char* filename)
 	OBJMaterial temp;
 	temp.name = "default";
 	mesh->materials.push_back(temp);
-	int currentMaterialID = static_cast<int>(mesh->materials.size()) - 1;
+	int currentMaterialID = (int)mesh->materials.size() - 1;
 	const int firsMaterialID = currentMaterialID;
 
 	float r, g, b;
@@ -443,7 +506,7 @@ void OBJLoader::parseMTL(const char* filename)
 
 			// find if the material with that name exists
 			currentMaterialID = -1;
-			for (unsigned int i = 0; i<mesh->materials.size(); i++)
+			for (unsigned int i = 0; i < mesh->materials.size(); i++)
 			{
 				if (mesh->materials[i].name == str)
 				{
@@ -504,8 +567,13 @@ void OBJLoader::parseMTL(const char* filename)
 		}
 		else if (Tools::compareStringIgnoreCase(line.substr(0, 7), "map_kd ")) { // read texture
 			std::istringstream s(line.substr(7));
-			s >> mesh->materials[currentMaterialID].texture;
-			mesh->materials[currentMaterialID].texture = folder + mesh->materials[currentMaterialID].texture;
+			s >> mesh->materials[currentMaterialID].textureDiffuse;
+			mesh->materials[currentMaterialID].textureDiffuse = folder + mesh->materials[currentMaterialID].textureDiffuse;
+		}
+		else if (Tools::compareStringIgnoreCase(line.substr(0, 13), "map_emissive ")) { // read ambient texture
+			std::istringstream s(line.substr(13));
+			s >> mesh->materials[currentMaterialID].textureAmbient;
+			mesh->materials[currentMaterialID].textureAmbient = folder + mesh->materials[currentMaterialID].textureAmbient;
 		}
 		else if (Tools::compareStringIgnoreCase(line.substr(0, 7), "map_ka ")) { // read ambient texture
 			std::istringstream s(line.substr(7));
@@ -524,6 +592,11 @@ void OBJLoader::parseMTL(const char* filename)
 		}
 		else if (Tools::compareStringIgnoreCase(line.substr(0, 9), "map_bump ")) { // read bump texture
 			std::istringstream s(line.substr(9));
+			s >> mesh->materials[currentMaterialID].textureNormal;
+			mesh->materials[currentMaterialID].textureNormal = folder + mesh->materials[currentMaterialID].textureNormal;
+		}
+		else if (Tools::compareStringIgnoreCase(line.substr(0, 5), "bump ")) { // read bump texture
+			std::istringstream s(line.substr(5));
 			s >> mesh->materials[currentMaterialID].textureBump;
 			mesh->materials[currentMaterialID].textureBump = folder + mesh->materials[currentMaterialID].textureBump;
 		}

@@ -5,7 +5,9 @@
 #include "glm\glm.hpp"
 #include <vector>
 #include "ShaderProgram.h"
+#include "GeometryNode.h"
 #include "SpotlightNode.h"
+#include "CollidableNode.h"
 
 class Renderer
 {
@@ -32,6 +34,10 @@ protected:
 	GLuint m_fbo;
 	GLuint m_fbo_depth_texture;
 	GLuint m_fbo_texture;
+	GLuint m_fbo_pos_texture;
+	GLuint m_fbo_normal_texture;
+	GLuint m_fbo_albedo_texture;
+	GLuint m_fbo_mask_texture;
 
 	GLuint m_vao_fbo, m_vbo_fbo_vertices;
 
@@ -73,10 +79,6 @@ protected:
 	glm::mat4* m_cannon_mount_transformation_matrix;
 	glm::mat4* m_cannon_mount_transformation_normal_matrix;
 
-	class GeometryNode** m_corridors_geometry;
-	glm::mat4* m_corridors_transformation_matrix;
-	glm::mat4* m_corridors_transformation_normal_matrix;
-
 	class GeometryNode** m_corridor_fork_geometry;
 	glm::mat4* m_corridor_fork_transformation_matrix;
 	glm::mat4* m_corridor_fork_transformation_normal_matrix;
@@ -109,7 +111,15 @@ protected:
 	glm::mat4* m_iris_transformation_matrix;
 	glm::mat4* m_iris_transformation_normal_matrix;
 
+	std::vector<GeometryNode*> m_nodes;
+	std::vector<CollidableNode*> m_collidables_nodes;
 
+	SpotLightNode								m_light;
+	ShaderProgram								m_geometry_program;
+	ShaderProgram								m_deferred_program;
+	ShaderProgram								m_post_program;
+	ShaderProgram								m_spot_light_shadow_map_program;
+	
 
 	// Protected Functions
 	bool InitRenderingTechniques();
@@ -118,10 +128,7 @@ protected:
 	bool InitLightSources();
 	bool InitGeometricMeshes();
 
-	ShaderProgram								m_geometry_rendering_program;
-	ShaderProgram								m_postprocess_program;
-	ShaderProgram								m_spot_light_shadow_map_program;
-
+	
 public:
 	Renderer();
 	float										timeElapsed;

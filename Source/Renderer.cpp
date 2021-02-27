@@ -232,6 +232,8 @@ Renderer::~Renderer()
 	delete m_beam_transformation_normal_matrix;
 }
 
+
+
 bool Renderer::Init(int SCREEN_WIDTH, int SCREEN_HEIGHT)
 {
 	this->m_screen_width = SCREEN_WIDTH;
@@ -301,43 +303,44 @@ void Renderer::Update(float dt)
 	m_view_matrix = glm::lookAt(m_camera_position, m_camera_target_position, m_camera_up_vector);
 	glm::mat4 wall_translation;
 
-	int duration = 500;
+	int duration = 5000;
 	glm::mat4 RotY = glm::rotate(glm::mat4(1.f), glm::radians(180.f), glm::vec3(0.f, 1.f, 0.f));
 	if (timeElapsed < duration) {
-		wall_translation = glm::translate(glm::mat4(1.0), glm::vec3(14 - (timeElapsed / 100), 0, 80));
+		wall_translation = glm::translate(glm::mat4(1.0), glm::vec3(14 - (timeElapsed / 1000), 0, 80));
 		m_wall_transformation_matrix[3] = glm::translate(glm::mat4(1.0), glm::vec3(-1, 0, 0)) * wall_translation;
 		m_wall_transformation_normal_matrix[3] = glm::mat4(glm::transpose(glm::inverse(glm::mat3(m_wall_transformation_matrix[3]))));
 		m_wallCH_transformation_matrix[3] = m_wall_transformation_matrix[3];
 		m_wallCH_transformation_normal_matrix[3] = m_wall_transformation_normal_matrix[3];
 		//(11, 0, 110))
-		m_wall_transformation_matrix[13] = glm::translate(glm::mat4(1.0), glm::vec3(14 - (timeElapsed / 100), 0, 130)) ;
+		m_wall_transformation_matrix[13] = glm::translate(glm::mat4(1.0), glm::vec3(21 - (duration * 2 - timeElapsed) / 1000, 0, 110));
 		m_wall_transformation_normal_matrix[13] = glm::mat4(glm::transpose(glm::inverse(glm::mat3(m_wall_transformation_matrix[13]))));
 		m_wallCH_transformation_matrix[13] = m_wall_transformation_matrix[3];
 		m_wallCH_transformation_normal_matrix[13] = m_wall_transformation_normal_matrix[13];
 
-		m_iris_transformation_matrix[2] = glm::translate(glm::mat4(1.0), glm::vec3(-14, -3.1, 119.8 - (timeElapsed / 100))) * RotY;
+		m_iris_transformation_matrix[2] = glm::translate(glm::mat4(1.0), glm::vec3(-14, -3.1, 119.8 - (timeElapsed / 1000))) * RotY;
 		m_iris_transformation_normal_matrix[2] = glm::mat4(glm::transpose(glm::inverse(glm::mat3(m_iris_transformation_matrix[2]))));
-
-		m_iris_transformation_matrix[3] = glm::translate(glm::mat4(1.0), glm::vec3(-14, 3.1, 119.8 - (timeElapsed / 200))) * RotY;
+		
+		m_iris_transformation_matrix[3] = glm::translate(glm::mat4(1.0), glm::vec3(-14, 3.1, 119.8 - (duration * 2 - timeElapsed) / 1000)) * RotY;
 		m_iris_transformation_normal_matrix[3] = glm::mat4(glm::transpose(glm::inverse(glm::mat3(m_iris_transformation_matrix[3]))));
-
+	
 		timeElapsed++;
 	}
 	else if (timeElapsed < duration * 2) {
 
-		wall_translation = glm::translate(glm::mat4(1.0), glm::vec3(14 - ((duration * 2 - timeElapsed) / 100), 0, 80));
+		wall_translation = glm::translate(glm::mat4(1.0), glm::vec3(14 - ((duration * 2 - timeElapsed) / 1000), 0, 80));
 		m_wall_transformation_matrix[3] = glm::translate(glm::mat4(1.0), glm::vec3(-1, 0, 0)) * wall_translation;
 		m_wall_transformation_normal_matrix[3] = glm::mat4(glm::transpose(glm::inverse(glm::mat3(m_wall_transformation_matrix[3]))));
 		m_wallCH_transformation_matrix[3] = m_wall_transformation_matrix[3];
 		m_wallCH_transformation_normal_matrix[3] = m_wall_transformation_normal_matrix[3];
-		m_wall_transformation_matrix[13] = glm::translate(glm::mat4(1.0), glm::vec3(11 - (duration * 2 - timeElapsed) / 100, 0, 100));
+		m_wall_transformation_matrix[13] = glm::translate(glm::mat4(1.0), glm::vec3(21 - (timeElapsed / 1000), 0, 110));
 		m_wall_transformation_normal_matrix[13] = glm::mat4(glm::transpose(glm::inverse(glm::mat3(m_wall_transformation_matrix[13]))));
+		
 		m_wallCH_transformation_matrix[13] = m_wall_transformation_matrix[3];
 		m_wallCH_transformation_normal_matrix[13] = m_wall_transformation_normal_matrix[13];
-		m_iris_transformation_matrix[2] = glm::translate(glm::mat4(1.0), glm::vec3(-14, -3.1, 119.8 - (duration * 2 - timeElapsed)/100)) * RotY;
+		m_iris_transformation_matrix[2] = glm::translate(glm::mat4(1.0), glm::vec3(-14, -3.1, 119.8 - (duration * 2 - timeElapsed)/1000)) * RotY;
 		m_iris_transformation_normal_matrix[2] = glm::mat4(glm::transpose(glm::inverse(glm::mat3(m_iris_transformation_matrix[2]))));
 
-		m_iris_transformation_matrix[3] = glm::translate(glm::mat4(1.0), glm::vec3(-14, 3.1, 119.8 - (duration * 2 - timeElapsed)/200)) * RotY;
+		m_iris_transformation_matrix[3] = glm::translate(glm::mat4(1.0), glm::vec3(-14, 3.1, 119.8 - (timeElapsed / 1000))) * RotY;
 		m_iris_transformation_normal_matrix[3] = glm::mat4(glm::transpose(glm::inverse(glm::mat3(m_iris_transformation_matrix[3]))));
 
 		timeElapsed++;
@@ -379,37 +382,37 @@ bool Renderer::InitRenderingTechniques()
 
 	std::string vertex_shader_path = "Assets/Shaders/basic_rendering.vert";
 	std::string fragment_shader_path = "Assets/Shaders/basic_rendering.frag";
-	m_geometry_rendering_program.LoadVertexShaderFromFile(vertex_shader_path.c_str());
-	m_geometry_rendering_program.LoadFragmentShaderFromFile(fragment_shader_path.c_str());
-	m_geometry_rendering_program.CreateProgram();
-	m_geometry_rendering_program.LoadUniform("uniform_projection_matrix");
-	m_geometry_rendering_program.LoadUniform("uniform_view_matrix");
-	m_geometry_rendering_program.LoadUniform("uniform_model_matrix");
-	m_geometry_rendering_program.LoadUniform("uniform_normal_matrix");
-	m_geometry_rendering_program.LoadUniform("uniform_diffuse");
-	m_geometry_rendering_program.LoadUniform("uniform_specular");
-	m_geometry_rendering_program.LoadUniform("uniform_shininess");
-	m_geometry_rendering_program.LoadUniform("uniform_has_texture");
-	m_geometry_rendering_program.LoadUniform("diffuse_texture");
-	m_geometry_rendering_program.LoadUniform("uniform_camera_position");
+	m_geometry_program.LoadVertexShaderFromFile(vertex_shader_path.c_str());
+	m_geometry_program.LoadFragmentShaderFromFile(fragment_shader_path.c_str());
+	m_geometry_program.CreateProgram();
+	m_geometry_program.LoadUniform("uniform_projection_matrix");
+	m_geometry_program.LoadUniform("uniform_view_matrix");
+	m_geometry_program.LoadUniform("uniform_model_matrix");
+	m_geometry_program.LoadUniform("uniform_normal_matrix");
+	m_geometry_program.LoadUniform("uniform_diffuse");
+	m_geometry_program.LoadUniform("uniform_specular");
+	m_geometry_program.LoadUniform("uniform_shininess");
+	m_geometry_program.LoadUniform("uniform_has_texture");
+	m_geometry_program.LoadUniform("diffuse_texture");
+	m_geometry_program.LoadUniform("uniform_camera_position");
 	// Light Source Uniforms
-	m_geometry_rendering_program.LoadUniform("uniform_light_projection_matrix");
-	m_geometry_rendering_program.LoadUniform("uniform_light_view_matrix");
-	m_geometry_rendering_program.LoadUniform("uniform_light_position");
-	m_geometry_rendering_program.LoadUniform("uniform_light_direction");
-	m_geometry_rendering_program.LoadUniform("uniform_light_color");
-	m_geometry_rendering_program.LoadUniform("uniform_light_umbra");
-	m_geometry_rendering_program.LoadUniform("uniform_light_penumbra");
-	m_geometry_rendering_program.LoadUniform("uniform_cast_shadows");
-	m_geometry_rendering_program.LoadUniform("shadowmap_texture");
+	m_geometry_program.LoadUniform("uniform_light_projection_matrix");
+	m_geometry_program.LoadUniform("uniform_light_view_matrix");
+	m_geometry_program.LoadUniform("uniform_light_position");
+	m_geometry_program.LoadUniform("uniform_light_direction");
+	m_geometry_program.LoadUniform("uniform_light_color");
+	m_geometry_program.LoadUniform("uniform_light_umbra");
+	m_geometry_program.LoadUniform("uniform_light_penumbra");
+	m_geometry_program.LoadUniform("uniform_cast_shadows");
+	m_geometry_program.LoadUniform("shadowmap_texture");
 
 	vertex_shader_path = "Assets/Shaders/postproc.vert";
 	fragment_shader_path = "Assets/Shaders/postproc.frag";
-	m_postprocess_program.LoadVertexShaderFromFile(vertex_shader_path.c_str());
-	m_postprocess_program.LoadFragmentShaderFromFile(fragment_shader_path.c_str());
-	m_postprocess_program.CreateProgram();
-	m_postprocess_program.LoadUniform("uniform_texture");
-	m_postprocess_program.LoadUniform("uniform_time");
+	m_post_program.LoadVertexShaderFromFile(vertex_shader_path.c_str());
+	m_post_program.LoadFragmentShaderFromFile(fragment_shader_path.c_str());
+	m_post_program.CreateProgram();
+	m_post_program.LoadUniform("uniform_texture");
+	m_post_program.LoadUniform("uniform_time");
 
 	vertex_shader_path = "Assets/Shaders/shadow_map_rendering.vert";
 	fragment_shader_path = "Assets/Shaders/shadow_map_rendering.frag";
@@ -427,9 +430,9 @@ bool Renderer::ReloadShaders()
 {
 	bool reloaded = true;
 	// rendering techniques
-	m_geometry_rendering_program.ReloadProgram();
+	m_geometry_program.ReloadProgram();
 
-	m_postprocess_program.ReloadProgram();
+	m_post_program.ReloadProgram();
 
 	m_spot_light_shadow_map_program.ReloadProgram();
 
@@ -578,11 +581,6 @@ bool Renderer::InitGeometricMeshes()
 	m_cannon_mount_transformation_matrix[1] = glm::translate(glm::mat4(1.0), glm::vec3(1, 0, 1)) * cannonMount_translation * RotY;
 	m_cannon_mount_transformation_normal_matrix[1] = glm::mat4(glm::transpose(glm::inverse(glm::mat3(m_cannon_mount_transformation_matrix[1]))));
 
-	
-
-
-
-
 	//glm::translate(glm::mat4(1.0), glm::vec3(2.2, -12, 120));
 
 	delete mesh;
@@ -627,7 +625,6 @@ bool Renderer::InitGeometricMeshes()
 		}
 		else
 			initialized = false;
-
 	}
 	int j = 0;
 	for (int i = -10; i < 70; i = i + 10) {
@@ -639,7 +636,6 @@ bool Renderer::InitGeometricMeshes()
 	}
 
 	for (int i = -10; i < 70; i = i + 10) {
-
 		glm::mat4 pipe_translation = glm::translate(glm::mat4(1.0), glm::vec3(-1.5, 5.0, i));
 		m_pipe_transformation_matrix[j] = glm::translate(glm::mat4(1.0), glm::vec3(1, 0, 0)) * pipe_translation;
 		m_pipe_transformation_normal_matrix[j] = glm::mat4(glm::transpose(glm::inverse(glm::mat3(m_pipe_transformation_matrix[j]))));
@@ -722,7 +718,7 @@ bool Renderer::InitGeometricMeshes()
 	m_wall_transformation_matrix[10] = glm::translate(glm::mat4(1.0), glm::vec3(5, 0, 110));
 	m_wall_transformation_normal_matrix[10] = glm::mat4(glm::transpose(glm::inverse(glm::mat3(m_wall_transformation_matrix[10]))));
 
-	m_wall_transformation_matrix[13] = glm::translate(glm::mat4(1.0), glm::vec3(14, 0, 130));
+	m_wall_transformation_matrix[13] = glm::translate(glm::mat4(1.0), glm::vec3(14, 0, 120));
 	m_wall_transformation_normal_matrix[13] = glm::mat4(glm::transpose(glm::inverse(glm::mat3(m_wall_transformation_matrix[10]))));
 	//deksia
 	m_wall_transformation_matrix[11] = glm::translate(glm::mat4(1.0), glm::vec3(-5, 0, 110));
@@ -1067,25 +1063,25 @@ void Renderer::RenderGeometry()
 		break;
 	};
 
-	m_geometry_rendering_program.Bind();
-	glUniformMatrix4fv(m_geometry_rendering_program["uniform_projection_matrix"], 1, GL_FALSE, glm::value_ptr(m_projection_matrix));
-	glUniformMatrix4fv(m_geometry_rendering_program["uniform_view_matrix"], 1, GL_FALSE, glm::value_ptr(m_view_matrix));
-	glUniform3f(m_geometry_rendering_program["uniform_camera_position"], m_camera_position.x, m_camera_position.y, m_camera_position.z);
+	m_geometry_program.Bind();
+	glUniformMatrix4fv(m_geometry_program["uniform_projection_matrix"], 1, GL_FALSE, glm::value_ptr(m_projection_matrix));
+	glUniformMatrix4fv(m_geometry_program["uniform_view_matrix"], 1, GL_FALSE, glm::value_ptr(m_view_matrix));
+	glUniform3f(m_geometry_program["uniform_camera_position"], m_camera_position.x, m_camera_position.y, m_camera_position.z);
 
 	// pass the light source parameters
 	for (int i = 0; i < 5; i++) {
 		glm::vec3 light_position = m_spotlight_node[i].GetPosition();
 		glm::vec3 light_direction = m_spotlight_node[i].GetDirection();
 		glm::vec3 light_color = m_spotlight_node[i].GetColor();
-		glUniformMatrix4fv(m_geometry_rendering_program["uniform_light_projection_matrix"], 1, GL_FALSE, glm::value_ptr(m_spotlight_node[i].GetProjectionMatrix()));
-		glUniformMatrix4fv(m_geometry_rendering_program["uniform_light_view_matrix"], 1, GL_FALSE, glm::value_ptr(m_spotlight_node[i].GetViewMatrix()));
-		glUniform3f(m_geometry_rendering_program["uniform_light_position"], light_position.x, light_position.y, light_position.z);
-		glUniform3f(m_geometry_rendering_program["uniform_light_direction"], light_direction.x, light_direction.y, light_direction.z);
-		glUniform3f(m_geometry_rendering_program["uniform_light_color"], light_color.x, light_color.y, light_color.z);
-		glUniform1f(m_geometry_rendering_program["uniform_light_umbra"], m_spotlight_node[i].GetUmbra());
-		glUniform1f(m_geometry_rendering_program["uniform_light_penumbra"], m_spotlight_node[i].GetPenumbra());
-		glUniform1i(m_geometry_rendering_program["uniform_cast_shadows"], (m_spotlight_node[i].GetCastShadowsStatus()) ? 1 : 0);
-		glUniform1i(m_geometry_rendering_program["shadowmap_texture"], 1);
+		glUniformMatrix4fv(m_geometry_program["uniform_light_projection_matrix"], 1, GL_FALSE, glm::value_ptr(m_spotlight_node[i].GetProjectionMatrix()));
+		glUniformMatrix4fv(m_geometry_program["uniform_light_view_matrix"], 1, GL_FALSE, glm::value_ptr(m_spotlight_node[i].GetViewMatrix()));
+		glUniform3f(m_geometry_program["uniform_light_position"], light_position.x, light_position.y, light_position.z);
+		glUniform3f(m_geometry_program["uniform_light_direction"], light_direction.x, light_direction.y, light_direction.z);
+		glUniform3f(m_geometry_program["uniform_light_color"], light_color.x, light_color.y, light_color.z);
+		glUniform1f(m_geometry_program["uniform_light_umbra"], m_spotlight_node[i].GetUmbra());
+		glUniform1f(m_geometry_program["uniform_light_penumbra"], m_spotlight_node[i].GetPenumbra());
+		glUniform1i(m_geometry_program["uniform_cast_shadows"], (m_spotlight_node[i].GetCastShadowsStatus()) ? 1 : 0);
+		glUniform1i(m_geometry_program["shadowmap_texture"], 1);
 		glActiveTexture(GL_TEXTURE1);
 		glBindTexture(GL_TEXTURE_2D, (m_spotlight_node[i].GetCastShadowsStatus()) ? m_spotlight_node[i].GetShadowMapDepthTexture() : 0);
 	}
@@ -1093,7 +1089,7 @@ void Renderer::RenderGeometry()
 
 
 	// Enable Texture Unit 0
-	glUniform1i(m_geometry_rendering_program["uniform_diffuse_texture"], 0);
+	glUniform1i(m_geometry_program["uniform_diffuse_texture"], 0);
 	glActiveTexture(GL_TEXTURE0);
 
 
@@ -1101,19 +1097,19 @@ void Renderer::RenderGeometry()
 	for (int i = 0; i < 6; i++) {
 
 		glBindVertexArray(m_corridors_geometry[i]->m_vao);
-		glUniformMatrix4fv(m_geometry_rendering_program["uniform_model_matrix"], 1, GL_FALSE, glm::value_ptr(m_corridors_transformation_matrix[i]));
-		glUniformMatrix4fv(m_geometry_rendering_program["uniform_normal_matrix"], 1, GL_FALSE, glm::value_ptr(m_corridors_transformation_normal_matrix[i]));
+		glUniformMatrix4fv(m_geometry_program["uniform_model_matrix"], 1, GL_FALSE, glm::value_ptr(m_corridors_transformation_matrix[i]));
+		glUniformMatrix4fv(m_geometry_program["uniform_normal_matrix"], 1, GL_FALSE, glm::value_ptr(m_corridors_transformation_normal_matrix[i]));
 		for (int j = 0; j < m_corridors_geometry[i]->parts.size(); j++)
 		{
-			glm::vec3 diffuseColor = m_corridors_geometry[i]->parts[j].diffuseColor;
-			glm::vec3 specularColor = m_corridors_geometry[i]->parts[j].specularColor;
+			glm::vec3 diffuseColor = m_corridors_geometry[i]->parts[j].diffuse;
+			glm::vec3 specularColor = m_corridors_geometry[i]->parts[j].specular;
 			float shininess = m_corridors_geometry[i]->parts[j].shininess;
 
-			glUniform3f(m_geometry_rendering_program["uniform_diffuse"], diffuseColor.r, diffuseColor.g, diffuseColor.b);
-			glUniform3f(m_geometry_rendering_program["uniform_specular"], specularColor.r, specularColor.g, specularColor.b);
-			glUniform1f(m_geometry_rendering_program["uniform_shininess"], shininess);
-			glUniform1f(m_geometry_rendering_program["uniform_has_texture"], (m_corridors_geometry[i]->parts[j].textureID > 0) ? 1.0f : 0.0f);
-			glBindTexture(GL_TEXTURE_2D, m_corridors_geometry[i]->parts[j].textureID);
+			glUniform3f(m_geometry_program["uniform_diffuse"], diffuseColor.r, diffuseColor.g, diffuseColor.b);
+			glUniform3f(m_geometry_program["uniform_specular"], specularColor.r, specularColor.g, specularColor.b);
+			glUniform1f(m_geometry_program["uniform_shininess"], shininess);
+			glUniform1f(m_geometry_program["uniform_has_texture"], (m_corridors_geometry[i]->parts[j].diffuse_textureID > 0) ? 1.0f : 0.0f);
+			glBindTexture(GL_TEXTURE_2D, m_corridors_geometry[i]->parts[j].diffuse_textureID);
 
 			glDrawArrays(GL_TRIANGLES, m_corridors_geometry[i]->parts[j].start_offset, m_corridors_geometry[i]->parts[j].count);
 		}
@@ -1123,18 +1119,18 @@ void Renderer::RenderGeometry()
 	// draw the Door
 	for (int i = 0; i < 14; i++) {
 		glBindVertexArray(m_wall_geometry[i]->m_vao);
-		glUniformMatrix4fv(m_geometry_rendering_program["uniform_model_matrix"], 1, GL_FALSE, glm::value_ptr(m_wall_transformation_matrix[i]));
-		glUniformMatrix4fv(m_geometry_rendering_program["uniform_normal_matrix"], 1, GL_FALSE, glm::value_ptr(m_wall_transformation_normal_matrix[i]));
+		glUniformMatrix4fv(m_geometry_program["uniform_model_matrix"], 1, GL_FALSE, glm::value_ptr(m_wall_transformation_matrix[i]));
+		glUniformMatrix4fv(m_geometry_program["uniform_normal_matrix"], 1, GL_FALSE, glm::value_ptr(m_wall_transformation_normal_matrix[i]));
 		for (int j = 0; j < m_wall_geometry[i]->parts.size(); j++)
 		{
-			glm::vec3 diffuseColor = m_wall_geometry[i]->parts[j].diffuseColor;
-			glm::vec3 specularColor = m_wall_geometry[i]->parts[j].specularColor;
+			glm::vec3 diffuseColor = m_wall_geometry[i]->parts[j].diffuse;
+			glm::vec3 specularColor = m_wall_geometry[i]->parts[j].specular;
 			float shininess = m_wall_geometry[i]->parts[j].shininess;
-			glUniform3f(m_geometry_rendering_program["uniform_diffuse"], diffuseColor.r, diffuseColor.g, diffuseColor.b);
-			glUniform3f(m_geometry_rendering_program["uniform_specular"], specularColor.r, specularColor.g, specularColor.b);
-			glUniform1f(m_geometry_rendering_program["uniform_shininess"], shininess);
-			glUniform1f(m_geometry_rendering_program["uniform_has_texture"], (m_wall_geometry[i]->parts[j].textureID > 0) ? 1.0f : 0.0f);
-			glBindTexture(GL_TEXTURE_2D, m_wall_geometry[i]->parts[j].textureID);
+			glUniform3f(m_geometry_program["uniform_diffuse"], diffuseColor.r, diffuseColor.g, diffuseColor.b);
+			glUniform3f(m_geometry_program["uniform_specular"], specularColor.r, specularColor.g, specularColor.b);
+			glUniform1f(m_geometry_program["uniform_shininess"], shininess);
+			glUniform1f(m_geometry_program["uniform_has_texture"], (m_wall_geometry[i]->parts[j].diffuse_textureID > 0) ? 1.0f : 0.0f);
+			glBindTexture(GL_TEXTURE_2D, m_wall_geometry[i]->parts[j].diffuse_textureID);
 
 			glDrawArrays(GL_TRIANGLES, m_wall_geometry[i]->parts[j].start_offset, m_wall_geometry[i]->parts[j].count);
 		}
@@ -1142,18 +1138,18 @@ void Renderer::RenderGeometry()
 	// draw the pipe
 	for (int i = 0; i < 24; i++) {
 		glBindVertexArray(m_pipe_geometry[i]->m_vao);
-		glUniformMatrix4fv(m_geometry_rendering_program["uniform_model_matrix"], 1, GL_FALSE, glm::value_ptr(m_pipe_transformation_matrix[i]));
-		glUniformMatrix4fv(m_geometry_rendering_program["uniform_normal_matrix"], 1, GL_FALSE, glm::value_ptr(m_pipe_transformation_normal_matrix[i]));
+		glUniformMatrix4fv(m_geometry_program["uniform_model_matrix"], 1, GL_FALSE, glm::value_ptr(m_pipe_transformation_matrix[i]));
+		glUniformMatrix4fv(m_geometry_program["uniform_normal_matrix"], 1, GL_FALSE, glm::value_ptr(m_pipe_transformation_normal_matrix[i]));
 		for (int j = 0; j < m_pipe_geometry[i]->parts.size(); j++)
 		{
-			glm::vec3 diffuseColor = m_pipe_geometry[i]->parts[j].diffuseColor;
-			glm::vec3 specularColor = m_pipe_geometry[i]->parts[j].specularColor;
+			glm::vec3 diffuseColor = m_pipe_geometry[i]->parts[j].diffuse;
+			glm::vec3 specularColor = m_pipe_geometry[i]->parts[j].specular;
 			float shininess = m_pipe_geometry[i]->parts[j].shininess;
-			glUniform3f(m_geometry_rendering_program["uniform_diffuse"], diffuseColor.r, diffuseColor.g, diffuseColor.b);
-			glUniform3f(m_geometry_rendering_program["uniform_specular"], specularColor.r, specularColor.g, specularColor.b);
-			glUniform1f(m_geometry_rendering_program["uniform_shininess"], shininess);
-			glUniform1f(m_geometry_rendering_program["uniform_has_texture"], (m_pipe_geometry[i]->parts[j].textureID > 0) ? 1.0f : 0.0f);
-			glBindTexture(GL_TEXTURE_2D, m_pipe_geometry[i]->parts[j].textureID);
+			glUniform3f(m_geometry_program["uniform_diffuse"], diffuseColor.r, diffuseColor.g, diffuseColor.b);
+			glUniform3f(m_geometry_program["uniform_specular"], specularColor.r, specularColor.g, specularColor.b);
+			glUniform1f(m_geometry_program["uniform_shininess"], shininess);
+			glUniform1f(m_geometry_program["uniform_has_texture"], (m_pipe_geometry[i]->parts[j].diffuse_textureID > 0) ? 1.0f : 0.0f);
+			glBindTexture(GL_TEXTURE_2D, m_pipe_geometry[i]->parts[j].diffuse_textureID);
 
 			glDrawArrays(GL_TRIANGLES, m_pipe_geometry[i]->parts[j].start_offset, m_pipe_geometry[i]->parts[j].count);
 		}
@@ -1161,18 +1157,18 @@ void Renderer::RenderGeometry()
 	//draw beam
 	for (int i = 0; i < 7; i++) {
 		glBindVertexArray(m_beam_geometry[i]->m_vao);
-		glUniformMatrix4fv(m_geometry_rendering_program["uniform_model_matrix"], 1, GL_FALSE, glm::value_ptr(m_beam_transformation_matrix[i]));
-		glUniformMatrix4fv(m_geometry_rendering_program["uniform_normal_matrix"], 1, GL_FALSE, glm::value_ptr(m_beam_transformation_normal_matrix[i]));
+		glUniformMatrix4fv(m_geometry_program["uniform_model_matrix"], 1, GL_FALSE, glm::value_ptr(m_beam_transformation_matrix[i]));
+		glUniformMatrix4fv(m_geometry_program["uniform_normal_matrix"], 1, GL_FALSE, glm::value_ptr(m_beam_transformation_normal_matrix[i]));
 		for (int j = 0; j < m_beam_geometry[i]->parts.size(); j++)
 		{
-			glm::vec3 diffuseColor = m_beam_geometry[i]->parts[j].diffuseColor;
-			glm::vec3 specularColor = m_beam_geometry[i]->parts[j].specularColor;
+			glm::vec3 diffuseColor = m_beam_geometry[i]->parts[j].diffuse;
+			glm::vec3 specularColor = m_beam_geometry[i]->parts[j].specular;
 			float shininess = m_beam_geometry[i]->parts[j].shininess;
-			glUniform3f(m_geometry_rendering_program["uniform_diffuse"], diffuseColor.r, diffuseColor.g, diffuseColor.b);
-			glUniform3f(m_geometry_rendering_program["uniform_specular"], specularColor.r, specularColor.g, specularColor.b);
-			glUniform1f(m_geometry_rendering_program["uniform_shininess"], shininess);
-			glUniform1f(m_geometry_rendering_program["uniform_has_texture"], (m_beam_geometry[i]->parts[j].textureID > 0) ? 1.0f : 0.0f);
-			glBindTexture(GL_TEXTURE_2D, m_beam_geometry[i]->parts[j].textureID);
+			glUniform3f(m_geometry_program["uniform_diffuse"], diffuseColor.r, diffuseColor.g, diffuseColor.b);
+			glUniform3f(m_geometry_program["uniform_specular"], specularColor.r, specularColor.g, specularColor.b);
+			glUniform1f(m_geometry_program["uniform_shininess"], shininess);
+			glUniform1f(m_geometry_program["uniform_has_texture"], (m_beam_geometry[i]->parts[j].diffuse_textureID > 0) ? 1.0f : 0.0f);
+			glBindTexture(GL_TEXTURE_2D, m_beam_geometry[i]->parts[j].diffuse_textureID);
 
 			glDrawArrays(GL_TRIANGLES, m_beam_geometry[i]->parts[j].start_offset, m_beam_geometry[i]->parts[j].count);
 		}
@@ -1180,18 +1176,18 @@ void Renderer::RenderGeometry()
 	//draw cannon mount
 	for (int i = 0; i < 2; i++) {
 		glBindVertexArray(m_cannon_mount_geometry[i]->m_vao);
-		glUniformMatrix4fv(m_geometry_rendering_program["uniform_model_matrix"], 1, GL_FALSE, glm::value_ptr(m_cannon_mount_transformation_matrix[i]));
-		glUniformMatrix4fv(m_geometry_rendering_program["uniform_normal_matrix"], 1, GL_FALSE, glm::value_ptr(m_cannon_mount_transformation_normal_matrix[i]));
+		glUniformMatrix4fv(m_geometry_program["uniform_model_matrix"], 1, GL_FALSE, glm::value_ptr(m_cannon_mount_transformation_matrix[i]));
+		glUniformMatrix4fv(m_geometry_program["uniform_normal_matrix"], 1, GL_FALSE, glm::value_ptr(m_cannon_mount_transformation_normal_matrix[i]));
 		for (int j = 0; j < m_cannon_mount_geometry[i]->parts.size(); j++)
 		{
-			glm::vec3 diffuseColor = m_cannon_mount_geometry[i]->parts[j].diffuseColor;
-			glm::vec3 specularColor = m_cannon_mount_geometry[i]->parts[j].specularColor;
+			glm::vec3 diffuseColor = m_cannon_mount_geometry[i]->parts[j].diffuse;
+			glm::vec3 specularColor = m_cannon_mount_geometry[i]->parts[j].specular;
 			float shininess = m_cannon_mount_geometry[i]->parts[j].shininess;
-			glUniform3f(m_geometry_rendering_program["uniform_diffuse"], diffuseColor.r, diffuseColor.g, diffuseColor.b);
-			glUniform3f(m_geometry_rendering_program["uniform_specular"], specularColor.r, specularColor.g, specularColor.b);
-			glUniform1f(m_geometry_rendering_program["uniform_shininess"], shininess);
-			glUniform1f(m_geometry_rendering_program["uniform_has_texture"], (m_cannon_mount_geometry[i]->parts[j].textureID > 0) ? 1.0f : 0.0f);
-			glBindTexture(GL_TEXTURE_2D, m_cannon_mount_geometry[i]->parts[j].textureID);
+			glUniform3f(m_geometry_program["uniform_diffuse"], diffuseColor.r, diffuseColor.g, diffuseColor.b);
+			glUniform3f(m_geometry_program["uniform_specular"], specularColor.r, specularColor.g, specularColor.b);
+			glUniform1f(m_geometry_program["uniform_shininess"], shininess);
+			glUniform1f(m_geometry_program["uniform_has_texture"], (m_cannon_mount_geometry[i]->parts[j].diffuse_textureID > 0) ? 1.0f : 0.0f);
+			glBindTexture(GL_TEXTURE_2D, m_cannon_mount_geometry[i]->parts[j].diffuse_textureID);
 
 			glDrawArrays(GL_TRIANGLES, m_cannon_mount_geometry[i]->parts[j].start_offset, m_cannon_mount_geometry[i]->parts[j].count);
 		}
@@ -1200,18 +1196,18 @@ void Renderer::RenderGeometry()
 	//draw cannon
 	for (int i = 0; i < 3; i++) {
 		glBindVertexArray(m_cannon_geometry[i]->m_vao);
-		glUniformMatrix4fv(m_geometry_rendering_program["uniform_model_matrix"], 1, GL_FALSE, glm::value_ptr(m_cannon_transformation_matrix[i]));
-		glUniformMatrix4fv(m_geometry_rendering_program["uniform_normal_matrix"], 1, GL_FALSE, glm::value_ptr(m_cannon_transformation_normal_matrix[i]));
+		glUniformMatrix4fv(m_geometry_program["uniform_model_matrix"], 1, GL_FALSE, glm::value_ptr(m_cannon_transformation_matrix[i]));
+		glUniformMatrix4fv(m_geometry_program["uniform_normal_matrix"], 1, GL_FALSE, glm::value_ptr(m_cannon_transformation_normal_matrix[i]));
 		for (int j = 0; j < m_cannon_geometry[i]->parts.size(); j++)
 		{
-			glm::vec3 diffuseColor = m_cannon_geometry[i]->parts[j].diffuseColor;
-			glm::vec3 specularColor = m_cannon_geometry[i]->parts[j].specularColor;
+			glm::vec3 diffuseColor = m_cannon_geometry[i]->parts[j].diffuse;
+			glm::vec3 specularColor = m_cannon_geometry[i]->parts[j].specular;
 			float shininess = m_cannon_geometry[i]->parts[j].shininess;
-			glUniform3f(m_geometry_rendering_program["uniform_diffuse"], diffuseColor.r, diffuseColor.g, diffuseColor.b);
-			glUniform3f(m_geometry_rendering_program["uniform_specular"], specularColor.r, specularColor.g, specularColor.b);
-			glUniform1f(m_geometry_rendering_program["uniform_shininess"], shininess);
-			glUniform1f(m_geometry_rendering_program["uniform_has_texture"], (m_cannon_geometry[i]->parts[j].textureID > 0) ? 1.0f : 0.0f);
-			glBindTexture(GL_TEXTURE_2D, m_cannon_geometry[i]->parts[j].textureID);
+			glUniform3f(m_geometry_program["uniform_diffuse"], diffuseColor.r, diffuseColor.g, diffuseColor.b);
+			glUniform3f(m_geometry_program["uniform_specular"], specularColor.r, specularColor.g, specularColor.b);
+			glUniform1f(m_geometry_program["uniform_shininess"], shininess);
+			glUniform1f(m_geometry_program["uniform_has_texture"], (m_cannon_geometry[i]->parts[j].diffuse_textureID > 0) ? 1.0f : 0.0f);
+			glBindTexture(GL_TEXTURE_2D, m_cannon_geometry[i]->parts[j].diffuse_textureID);
 
 			glDrawArrays(GL_TRIANGLES, m_cannon_geometry[i]->parts[j].start_offset, m_cannon_geometry[i]->parts[j].count);
 		}
@@ -1220,18 +1216,18 @@ void Renderer::RenderGeometry()
 	//draw iris
 	for (int i = 0; i < 4; i++) {
 		glBindVertexArray(m_iris_geometry[i]->m_vao);
-		glUniformMatrix4fv(m_geometry_rendering_program["uniform_model_matrix"], 1, GL_FALSE, glm::value_ptr(m_iris_transformation_matrix[i]));
-		glUniformMatrix4fv(m_geometry_rendering_program["uniform_normal_matrix"], 1, GL_FALSE, glm::value_ptr(m_iris_transformation_normal_matrix[i]));
+		glUniformMatrix4fv(m_geometry_program["uniform_model_matrix"], 1, GL_FALSE, glm::value_ptr(m_iris_transformation_matrix[i]));
+		glUniformMatrix4fv(m_geometry_program["uniform_normal_matrix"], 1, GL_FALSE, glm::value_ptr(m_iris_transformation_normal_matrix[i]));
 		for (int j = 0; j < m_iris_geometry[i]->parts.size(); j++)
 		{
-			glm::vec3 diffuseColor = m_iris_geometry[i]->parts[j].diffuseColor;
-			glm::vec3 specularColor = m_iris_geometry[i]->parts[j].specularColor;
+			glm::vec3 diffuseColor = m_iris_geometry[i]->parts[j].diffuse;
+			glm::vec3 specularColor = m_iris_geometry[i]->parts[j].specular;
 			float shininess = m_iris_geometry[i]->parts[j].shininess;
-			glUniform3f(m_geometry_rendering_program["uniform_diffuse"], diffuseColor.r, diffuseColor.g, diffuseColor.b);
-			glUniform3f(m_geometry_rendering_program["uniform_specular"], specularColor.r, specularColor.g, specularColor.b);
-			glUniform1f(m_geometry_rendering_program["uniform_shininess"], shininess);
-			glUniform1f(m_geometry_rendering_program["uniform_has_texture"], (m_iris_geometry[i]->parts[j].textureID > 0) ? 1.0f : 0.0f);
-			glBindTexture(GL_TEXTURE_2D, m_iris_geometry[i]->parts[j].textureID);
+			glUniform3f(m_geometry_program["uniform_diffuse"], diffuseColor.r, diffuseColor.g, diffuseColor.b);
+			glUniform3f(m_geometry_program["uniform_specular"], specularColor.r, specularColor.g, specularColor.b);
+			glUniform1f(m_geometry_program["uniform_shininess"], shininess);
+			glUniform1f(m_geometry_program["uniform_has_texture"], (m_iris_geometry[i]->parts[j].diffuse_textureID > 0) ? 1.0f : 0.0f);
+			glBindTexture(GL_TEXTURE_2D, m_iris_geometry[i]->parts[j].diffuse_textureID);
 
 			glDrawArrays(GL_TRIANGLES, m_iris_geometry[i]->parts[j].start_offset, m_iris_geometry[i]->parts[j].count);
 		}
@@ -1239,18 +1235,18 @@ void Renderer::RenderGeometry()
 	//draw a fork
 	for (int i = 0; i < 6; i++) {
 		glBindVertexArray(m_corridor_fork_geometry[i]->m_vao);
-		glUniformMatrix4fv(m_geometry_rendering_program["uniform_model_matrix"], 1, GL_FALSE, glm::value_ptr(m_corridor_fork_transformation_matrix[i]));
-		glUniformMatrix4fv(m_geometry_rendering_program["uniform_normal_matrix"], 1, GL_FALSE, glm::value_ptr(m_corridor_fork_transformation_normal_matrix[i]));
+		glUniformMatrix4fv(m_geometry_program["uniform_model_matrix"], 1, GL_FALSE, glm::value_ptr(m_corridor_fork_transformation_matrix[i]));
+		glUniformMatrix4fv(m_geometry_program["uniform_normal_matrix"], 1, GL_FALSE, glm::value_ptr(m_corridor_fork_transformation_normal_matrix[i]));
 		for (int j = 0; j < m_corridor_fork_geometry[i]->parts.size(); j++)
 		{
-			glm::vec3 diffuseColor = m_corridor_fork_geometry[i]->parts[j].diffuseColor;
-			glm::vec3 specularColor = m_corridor_fork_geometry[i]->parts[j].specularColor;
+			glm::vec3 diffuseColor = m_corridor_fork_geometry[i]->parts[j].diffuse;
+			glm::vec3 specularColor = m_corridor_fork_geometry[i]->parts[j].specular;
 			float shininess = m_corridor_fork_geometry[i]->parts[j].shininess;
-			glUniform3f(m_geometry_rendering_program["uniform_diffuse"], diffuseColor.r, diffuseColor.g, diffuseColor.b);
-			glUniform3f(m_geometry_rendering_program["uniform_specular"], specularColor.r, specularColor.g, specularColor.b);
-			glUniform1f(m_geometry_rendering_program["uniform_shininess"], shininess);
-			glUniform1f(m_geometry_rendering_program["uniform_has_texture"], (m_corridor_fork_geometry[i]->parts[j].textureID > 0) ? 1.0f : 0.0f);
-			glBindTexture(GL_TEXTURE_2D, m_corridor_fork_geometry[i]->parts[j].textureID);
+			glUniform3f(m_geometry_program["uniform_diffuse"], diffuseColor.r, diffuseColor.g, diffuseColor.b);
+			glUniform3f(m_geometry_program["uniform_specular"], specularColor.r, specularColor.g, specularColor.b);
+			glUniform1f(m_geometry_program["uniform_shininess"], shininess);
+			glUniform1f(m_geometry_program["uniform_has_texture"], (m_corridor_fork_geometry[i]->parts[j].diffuse_textureID > 0) ? 1.0f : 0.0f);
+			glBindTexture(GL_TEXTURE_2D, m_corridor_fork_geometry[i]->parts[j].diffuse_textureID);
 
 			glDrawArrays(GL_TRIANGLES, m_corridor_fork_geometry[i]->parts[j].start_offset, m_corridor_fork_geometry[i]->parts[j].count);
 		}
@@ -1258,41 +1254,41 @@ void Renderer::RenderGeometry()
 	//draw left
 	for (int i = 0; i < 2; i++) {
 		glBindVertexArray(m_corridor_left_geometry[i]->m_vao);
-		glUniformMatrix4fv(m_geometry_rendering_program["uniform_model_matrix"], 1, GL_FALSE, glm::value_ptr(m_corridor_left_transformation_matrix[i]));
-		glUniformMatrix4fv(m_geometry_rendering_program["uniform_normal_matrix"], 1, GL_FALSE, glm::value_ptr(m_corridor_left_transformation_normal_matrix[i]));
+		glUniformMatrix4fv(m_geometry_program["uniform_model_matrix"], 1, GL_FALSE, glm::value_ptr(m_corridor_left_transformation_matrix[i]));
+		glUniformMatrix4fv(m_geometry_program["uniform_normal_matrix"], 1, GL_FALSE, glm::value_ptr(m_corridor_left_transformation_normal_matrix[i]));
 		for (int j = 0; j < m_corridor_left_geometry[i]->parts.size(); j++)
 		{
-			glm::vec3 diffuseColor = m_corridor_left_geometry[i]->parts[j].diffuseColor;
-			glm::vec3 specularColor = m_corridor_left_geometry[i]->parts[j].specularColor;
+			glm::vec3 diffuseColor = m_corridor_left_geometry[i]->parts[j].diffuse;
+			glm::vec3 specularColor = m_corridor_left_geometry[i]->parts[j].specular;
 			float shininess = m_corridor_left_geometry[i]->parts[j].shininess;
-			glUniform3f(m_geometry_rendering_program["uniform_diffuse"], diffuseColor.r, diffuseColor.g, diffuseColor.b);
-			glUniform3f(m_geometry_rendering_program["uniform_specular"], specularColor.r, specularColor.g, specularColor.b);
-			glUniform1f(m_geometry_rendering_program["uniform_shininess"], shininess);
-			glUniform1f(m_geometry_rendering_program["uniform_has_texture"], (m_corridor_left_geometry[i]->parts[j].textureID > 0) ? 1.0f : 0.0f);
-			glBindTexture(GL_TEXTURE_2D, m_corridor_left_geometry[i]->parts[j].textureID);
+			glUniform3f(m_geometry_program["uniform_diffuse"], diffuseColor.r, diffuseColor.g, diffuseColor.b);
+			glUniform3f(m_geometry_program["uniform_specular"], specularColor.r, specularColor.g, specularColor.b);
+			glUniform1f(m_geometry_program["uniform_shininess"], shininess);
+			glUniform1f(m_geometry_program["uniform_has_texture"], (m_corridor_left_geometry[i]->parts[j].diffuse_textureID > 0) ? 1.0f : 0.0f);
+			glBindTexture(GL_TEXTURE_2D, m_corridor_left_geometry[i]->parts[j].diffuse_textureID);
 
 			glDrawArrays(GL_TRIANGLES, m_corridor_left_geometry[i]->parts[j].start_offset, m_corridor_left_geometry[i]->parts[j].count);
 		}
 	}
 	//draw right 
 	glBindVertexArray(m_corridor_right_geometry[0]->m_vao);
-	glUniformMatrix4fv(m_geometry_rendering_program["uniform_model_matrix"], 1, GL_FALSE, glm::value_ptr(m_corridor_right_transformation_matrix[0]));
-	glUniformMatrix4fv(m_geometry_rendering_program["uniform_normal_matrix"], 1, GL_FALSE, glm::value_ptr(m_corridor_right_transformation_normal_matrix[0]));
+	glUniformMatrix4fv(m_geometry_program["uniform_model_matrix"], 1, GL_FALSE, glm::value_ptr(m_corridor_right_transformation_matrix[0]));
+	glUniformMatrix4fv(m_geometry_program["uniform_normal_matrix"], 1, GL_FALSE, glm::value_ptr(m_corridor_right_transformation_normal_matrix[0]));
 	for (int j = 0; j < m_corridor_right_geometry[0]->parts.size(); j++)
 	{
-		glm::vec3 diffuseColor = m_corridor_right_geometry[0]->parts[j].diffuseColor;
-		glm::vec3 specularColor = m_corridor_right_geometry[0]->parts[j].specularColor;
+		glm::vec3 diffuseColor = m_corridor_right_geometry[0]->parts[j].diffuse;
+		glm::vec3 specularColor = m_corridor_right_geometry[0]->parts[j].specular;
 		float shininess = m_corridor_right_geometry[0]->parts[j].shininess;
-		glUniform3f(m_geometry_rendering_program["uniform_diffuse"], diffuseColor.r, diffuseColor.g, diffuseColor.b);
-		glUniform3f(m_geometry_rendering_program["uniform_specular"], specularColor.r, specularColor.g, specularColor.b);
-		glUniform1f(m_geometry_rendering_program["uniform_shininess"], shininess);
-		glUniform1f(m_geometry_rendering_program["uniform_has_texture"], (m_corridor_right_geometry[0]->parts[j].textureID > 0) ? 1.0f : 0.0f);
-		glBindTexture(GL_TEXTURE_2D, m_corridor_right_geometry[0]->parts[j].textureID);
+		glUniform3f(m_geometry_program["uniform_diffuse"], diffuseColor.r, diffuseColor.g, diffuseColor.b);
+		glUniform3f(m_geometry_program["uniform_specular"], specularColor.r, specularColor.g, specularColor.b);
+		glUniform1f(m_geometry_program["uniform_shininess"], shininess);
+		glUniform1f(m_geometry_program["uniform_has_texture"], (m_corridor_right_geometry[0]->parts[j].diffuse_textureID > 0) ? 1.0f : 0.0f);
+		glBindTexture(GL_TEXTURE_2D, m_corridor_right_geometry[0]->parts[j].diffuse_textureID);
 
 		glDrawArrays(GL_TRIANGLES, m_corridor_right_geometry[0]->parts[j].start_offset, m_corridor_right_geometry[0]->parts[j].count);
 	}
 	glBindVertexArray(0);
-	m_geometry_rendering_program.Unbind();
+	m_geometry_program.Unbind();
 
 	glDisable(GL_DEPTH_TEST);
 	if (m_rendering_mode != RENDERING_MODE::TRIANGLES)
@@ -1311,19 +1307,19 @@ void Renderer::RenderToOutFB()
 	glDisable(GL_DEPTH_TEST);
 	glDisable(GL_BLEND);
 
-	m_postprocess_program.Bind();
+	m_post_program.Bind();
 
 	glBindVertexArray(m_vao_fbo);
 	glActiveTexture(GL_TEXTURE0);
 	glBindTexture(GL_TEXTURE_2D, m_fbo_texture);
-	glUniform1i(m_postprocess_program["uniform_texture"], 0);
-	glUniform1f(m_postprocess_program["uniform_time"], m_continous_time);
+	glUniform1i(m_post_program["uniform_texture"], 0);
+	glUniform1f(m_post_program["uniform_time"], m_continous_time);
 
 	glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
 
 	glBindVertexArray(0);
 
-	m_postprocess_program.Unbind();
+	m_post_program.Unbind();
 }
 
 void Renderer::CameraMoveForward(bool enable)
