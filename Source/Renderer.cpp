@@ -16,48 +16,64 @@ Renderer::Renderer()
 
 	//allocation corridors
 	m_corridors_geometry = new GeometryNode * [10];
-	m_corridorsCW_geometry = new GeometryNode * [10];
-
+	m_corridorsCH_geometry = new GeometryNode * [10];
 	for (int i = 0; i < 10; i++) {
 		m_corridors_geometry[i] = nullptr;
-		m_corridorsCW_geometry[i] = nullptr;
+		m_corridorsCH_geometry[i] = nullptr;
 	}
 	m_corridors_transformation_matrix = new glm::mat4[10];
 	m_corridors_transformation_normal_matrix = new glm::mat4[10];
-	m_corridorsCW_transformation_matrix = new glm::mat4[10];
-	m_corridorsCW_transformation_normal_matrix = new glm::mat4[10];
+	m_corridorsCH_transformation_matrix = new glm::mat4[10];
+	m_corridorsCH_transformation_normal_matrix = new glm::mat4[10];
 
 	//left corridor
 	m_corridor_left_geometry = new GeometryNode * [5];
+	m_corridorCH_left_geometry = new GeometryNode * [5];
 	for (int i = 0; i < 5; i++) {
 		m_corridor_left_geometry[i] = nullptr;
+		m_corridorCH_left_geometry[i] = nullptr;
 	}
 	m_corridor_left_transformation_matrix = new glm::mat4[5];
 	m_corridor_left_transformation_normal_matrix = new glm::mat4[5];
+	m_corridor_leftCH_transformation_matrix = new glm::mat4[5];
+	m_corridor_leftCH_transformation_normal_matrix = new glm::mat4[5];
 	//right corridor
 	m_corridor_right_geometry = new GeometryNode * [5];
+	m_corridor_rightCH_geometry = new GeometryNode * [5];
 	for (int i = 0; i < 5; i++) {
 		m_corridor_right_geometry[i] = nullptr;
+		m_corridor_rightCH_geometry[i] = nullptr;
 	}
 	m_corridor_right_transformation_matrix = new glm::mat4[5];
 	m_corridor_right_transformation_normal_matrix = new glm::mat4[5];
+	m_corridor_rightCH_transformation_matrix = new glm::mat4[5];
+	m_corridor_rightCH_transformation_normal_matrix = new glm::mat4[5];
 
 	//fork corridor
 	m_corridor_fork_geometry = new GeometryNode * [7];
+	m_corridorCH_fork_geometry = new GeometryNode * [7];
 	for (int i = 0; i < 7; i++) {
 		m_corridor_fork_geometry[i] = nullptr;
+		m_corridorCH_fork_geometry[i] = nullptr;
 	}
 	m_corridor_fork_transformation_matrix = new glm::mat4[7];
 	m_corridor_fork_transformation_normal_matrix = new glm::mat4[7];
+	m_corridor_forkCH_transformation_matrix = new glm::mat4[7];
+	m_corridor_forkCH_transformation_normal_matrix = new glm::mat4[7];
 
 	//alocation walls
 
 	m_wall_geometry = new GeometryNode * [15];
+	m_wallCH_geometry = new GeometryNode * [15];
+
 	for (int i = 0; i < 15; i++) {
 		m_wall_geometry[i] = nullptr;
+		m_wallCH_geometry[i] = nullptr;
 	}
 	m_wall_transformation_matrix = new glm::mat4[15];
 	m_wall_transformation_normal_matrix = new glm::mat4[15];
+	m_wallCH_transformation_matrix = new glm::mat4[15];
+	m_wallCH_transformation_normal_matrix = new glm::mat4[15];
 
 	//allocation cannon
 	m_cannon_geometry = new GeometryNode * [3];
@@ -120,56 +136,71 @@ Renderer::~Renderer()
 	// delete common data
 	glDeleteVertexArrays(1, &m_vao_fbo);
 	glDeleteBuffers(1, &m_vbo_fbo_vertices);
-	//delete corridors
-
+	
 	for (int i = 0; i < 10; i++) {
 		delete m_iris_geometry[i];
 	}
 	delete m_iris_geometry;
 	delete m_iris_transformation_matrix;
 	delete m_iris_transformation_normal_matrix;
-
+	//delete corridors
 	for (int i = 0; i < 10; i++) {
 		delete m_corridors_geometry[i];
-		delete m_corridorsCW_geometry[i];
+		delete m_corridorsCH_geometry[i];
 	}
 	delete m_corridors_geometry;
 	delete m_corridors_transformation_matrix;
 	delete m_corridors_transformation_normal_matrix;
-	delete m_corridorsCW_geometry;
-	delete m_corridorsCW_transformation_matrix;
-	delete m_corridorsCW_transformation_normal_matrix;
+	delete m_corridorsCH_geometry;
+	delete m_corridorsCH_transformation_matrix;
+	delete m_corridorsCH_transformation_normal_matrix;
 
 	for (int i = 0; i < 7; i++) {
 		delete m_corridor_fork_geometry[i];
+		delete m_corridorCH_fork_geometry[i];
 	}
 	delete m_corridor_fork_geometry;
 	delete m_corridor_fork_transformation_matrix;
 	delete m_corridor_fork_transformation_normal_matrix;
+	delete m_corridorCH_fork_geometry;
+	delete m_corridor_forkCH_transformation_matrix;
+	delete m_corridor_forkCH_transformation_normal_matrix;
 
 	//delete left 
 	for (int i = 0; i < 5; i++) {
 		delete m_corridor_left_geometry[i];
+		delete m_corridorCH_left_geometry[i];
 	}
 	delete m_corridor_left_geometry;
 	delete m_corridor_left_transformation_matrix;
 	delete m_corridor_left_transformation_normal_matrix;
+	delete m_corridorCH_left_geometry;
+	delete m_corridor_leftCH_transformation_matrix;
+	delete m_corridor_leftCH_transformation_normal_matrix;
 	//right corridor
 
 	for (int i = 0; i < 5; i++) {
 		delete m_corridor_right_geometry[i];
+		delete m_corridor_rightCH_geometry[i];
 	}
 	delete m_corridor_right_geometry;
 	delete m_corridor_right_transformation_matrix;
 	delete m_corridor_right_transformation_normal_matrix;
+	delete m_corridor_rightCH_geometry;
+	delete m_corridor_rightCH_transformation_matrix;
+	delete m_corridor_rightCH_transformation_normal_matrix;
 
 	//delete walls
 	for (int i = 0; i < 15; i++) {
 		delete m_wall_geometry[i];
+		delete m_wallCH_geometry[i];
 	}
 	delete m_wall_geometry;
 	delete m_wall_transformation_matrix;
 	delete m_wall_transformation_normal_matrix;
+	delete m_wallCH_geometry;
+	delete m_wallCH_transformation_matrix;
+	delete m_wallCH_transformation_normal_matrix;
 
 	//delete cannons
 	for (int i = 0; i < 3; i++) {
@@ -276,10 +307,14 @@ void Renderer::Update(float dt)
 		wall_translation = glm::translate(glm::mat4(1.0), glm::vec3(14 - (timeElapsed / 100), 0, 80));
 		m_wall_transformation_matrix[3] = glm::translate(glm::mat4(1.0), glm::vec3(-1, 0, 0)) * wall_translation;
 		m_wall_transformation_normal_matrix[3] = glm::mat4(glm::transpose(glm::inverse(glm::mat3(m_wall_transformation_matrix[3]))));
+		m_wallCH_transformation_matrix[3] = m_wall_transformation_matrix[3];
+		m_wallCH_transformation_normal_matrix[3] = m_wall_transformation_normal_matrix[3];
 		//(11, 0, 110))
-		m_wall_transformation_matrix[13] = glm::translate(glm::mat4(1.0), glm::vec3(11 - (timeElapsed / 100), 0, 100)) ;
+		m_wall_transformation_matrix[13] = glm::translate(glm::mat4(1.0), glm::vec3(14 - (timeElapsed / 100), 0, 130)) ;
 		m_wall_transformation_normal_matrix[13] = glm::mat4(glm::transpose(glm::inverse(glm::mat3(m_wall_transformation_matrix[13]))));
-		
+		m_wallCH_transformation_matrix[13] = m_wall_transformation_matrix[3];
+		m_wallCH_transformation_normal_matrix[13] = m_wall_transformation_normal_matrix[13];
+
 		m_iris_transformation_matrix[2] = glm::translate(glm::mat4(1.0), glm::vec3(-14, -3.1, 119.8 - (timeElapsed / 100))) * RotY;
 		m_iris_transformation_normal_matrix[2] = glm::mat4(glm::transpose(glm::inverse(glm::mat3(m_iris_transformation_matrix[2]))));
 
@@ -293,10 +328,12 @@ void Renderer::Update(float dt)
 		wall_translation = glm::translate(glm::mat4(1.0), glm::vec3(14 - ((duration * 2 - timeElapsed) / 100), 0, 80));
 		m_wall_transformation_matrix[3] = glm::translate(glm::mat4(1.0), glm::vec3(-1, 0, 0)) * wall_translation;
 		m_wall_transformation_normal_matrix[3] = glm::mat4(glm::transpose(glm::inverse(glm::mat3(m_wall_transformation_matrix[3]))));
-		
+		m_wallCH_transformation_matrix[3] = m_wall_transformation_matrix[3];
+		m_wallCH_transformation_normal_matrix[3] = m_wall_transformation_normal_matrix[3];
 		m_wall_transformation_matrix[13] = glm::translate(glm::mat4(1.0), glm::vec3(11 - (duration * 2 - timeElapsed) / 100, 0, 100));
 		m_wall_transformation_normal_matrix[13] = glm::mat4(glm::transpose(glm::inverse(glm::mat3(m_wall_transformation_matrix[13]))));
-
+		m_wallCH_transformation_matrix[13] = m_wall_transformation_matrix[3];
+		m_wallCH_transformation_normal_matrix[13] = m_wall_transformation_normal_matrix[13];
 		m_iris_transformation_matrix[2] = glm::translate(glm::mat4(1.0), glm::vec3(-14, -3.1, 119.8 - (duration * 2 - timeElapsed)/100)) * RotY;
 		m_iris_transformation_normal_matrix[2] = glm::mat4(glm::transpose(glm::inverse(glm::mat3(m_iris_transformation_matrix[2]))));
 
@@ -498,8 +535,8 @@ bool Renderer::InitGeometricMeshes()
 	for (int i = 0; i < 6; i++) {
 		if (mesh != nullptr)
 		{
-			m_corridorsCW_geometry[i] = new GeometryNode();
-			m_corridorsCW_geometry[i]->Init(mesh);
+			m_corridorsCH_geometry[i] = new GeometryNode();
+			m_corridorsCH_geometry[i]->Init(mesh);
 		}
 		else
 			initialized = false;
@@ -507,15 +544,15 @@ bool Renderer::InitGeometricMeshes()
 	for (int i = 0; i < 4; i++) {
 		;
 
-		m_corridorsCW_transformation_matrix[i] = m_corridors_transformation_matrix[i] ;
-		m_corridorsCW_transformation_normal_matrix[i] = m_corridors_transformation_normal_matrix[i];
+		m_corridorsCH_transformation_matrix[i] = m_corridors_transformation_matrix[i] ;
+		m_corridorsCH_transformation_normal_matrix[i] = m_corridors_transformation_normal_matrix[i];
 	}
 
-	m_corridorsCW_transformation_matrix[4] = m_corridors_transformation_matrix[4];
-	m_corridorsCW_transformation_normal_matrix[4] =  m_corridors_transformation_normal_matrix[4];
+	m_corridorsCH_transformation_matrix[4] = m_corridors_transformation_matrix[4];
+	m_corridorsCH_transformation_normal_matrix[4] =  m_corridors_transformation_normal_matrix[4];
 
-	m_corridorsCW_transformation_matrix[5] = m_corridors_transformation_matrix[5];
-	m_corridorsCW_transformation_normal_matrix[5] = m_corridors_transformation_normal_matrix[5];
+	m_corridorsCH_transformation_matrix[5] = m_corridors_transformation_matrix[5];
+	m_corridorsCH_transformation_normal_matrix[5] = m_corridors_transformation_normal_matrix[5];
 
 	delete mesh;
 	//load cannon mounts
@@ -631,6 +668,21 @@ bool Renderer::InitGeometricMeshes()
 		else
 			initialized = false;
 	}
+	delete mesh;
+
+	mesh = loader.load("Assets/Objects/CH-Wall.obj");
+	for (int i = 0; i < 14; i++) {
+		if (mesh != nullptr)
+		{
+			m_wallCH_geometry[i] = new GeometryNode();
+			m_wallCH_geometry[i]->Init(mesh);
+
+		}
+		else
+			initialized = false;
+	}
+	
+
 	//base
 	glm::mat4 wall_trans = glm::translate(glm::mat4(1.0), glm::vec3(-3, 0, -20));
 	m_wall_transformation_matrix[0] = glm::translate(glm::mat4(1.0), glm::vec3(-1, 0, 0)) * wall_trans;
@@ -669,8 +721,8 @@ bool Renderer::InitGeometricMeshes()
 	//aristera sto prwto fork aristero kai deksi wall
 	m_wall_transformation_matrix[10] = glm::translate(glm::mat4(1.0), glm::vec3(5, 0, 110));
 	m_wall_transformation_normal_matrix[10] = glm::mat4(glm::transpose(glm::inverse(glm::mat3(m_wall_transformation_matrix[10]))));
-	
-	m_wall_transformation_matrix[13] = glm::translate(glm::mat4(1.0), glm::vec3(10, 0, 110));
+
+	m_wall_transformation_matrix[13] = glm::translate(glm::mat4(1.0), glm::vec3(14, 0, 130));
 	m_wall_transformation_normal_matrix[13] = glm::mat4(glm::transpose(glm::inverse(glm::mat3(m_wall_transformation_matrix[10]))));
 	//deksia
 	m_wall_transformation_matrix[11] = glm::translate(glm::mat4(1.0), glm::vec3(-5, 0, 110));
@@ -678,6 +730,11 @@ bool Renderer::InitGeometricMeshes()
 	//deksia deytero
 	m_wall_transformation_matrix[12] = glm::translate(glm::mat4(1.0), glm::vec3(-7, 0, 130));
 	m_wall_transformation_normal_matrix[12] = glm::mat4(glm::transpose(glm::inverse(glm::mat3(m_wall_transformation_matrix[12]))));
+	
+	for (int i = 0; i < 14; i++) {
+		m_wallCH_transformation_matrix[i] = m_wall_transformation_matrix[i];
+		m_wallCH_transformation_normal_matrix[i] = m_wall_transformation_normal_matrix[i];
+	}
 
 	delete mesh;
 

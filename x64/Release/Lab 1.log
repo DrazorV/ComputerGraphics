@@ -1,34 +1,34 @@
-﻿  Renderer.cpp
-C:\Users\jente\source\repos\DrazorV\ComputerGraphics\Source\Renderer.h(73,23): error C2086: 'GeometryNode **Renderer::m_corridors_geometry': redefinition
-C:\Users\jente\source\repos\DrazorV\ComputerGraphics\Source\Renderer.h(53): message : see declaration of 'Renderer::m_corridors_geometry'
-C:\Users\jente\source\repos\DrazorV\ComputerGraphics\Source\Renderer.h(74,13): error C2086: 'glm::mat4 *Renderer::m_corridors_transformation_matrix': redefinition
-C:\Users\jente\source\repos\DrazorV\ComputerGraphics\Source\Renderer.h(54): message : see declaration of 'Renderer::m_corridors_transformation_matrix'
-C:\Users\jente\source\repos\DrazorV\ComputerGraphics\Source\Renderer.h(75,13): error C2086: 'glm::mat4 *Renderer::m_corridors_transformation_normal_matrix': redefinition
-C:\Users\jente\source\repos\DrazorV\ComputerGraphics\Source\Renderer.h(55): message : see declaration of 'Renderer::m_corridors_transformation_normal_matrix'
-C:\Users\jente\source\repos\DrazorV\ComputerGraphics\Source\Renderer.cpp(1274,25): warning C4244: '=': conversion from 'int' to 'T', possible loss of data
+﻿  main.cpp
+C:\Users\jente\source\repos\DrazorV\ComputerGraphics\Source\Renderer.h(76,23): error C2086: 'GeometryNode **Renderer::m_corridors_geometry': redefinition
+C:\Users\jente\source\repos\DrazorV\ComputerGraphics\Source\Renderer.h(56): message : see declaration of 'Renderer::m_corridors_geometry'
+C:\Users\jente\source\repos\DrazorV\ComputerGraphics\Source\Renderer.h(77,13): error C2086: 'glm::mat4 *Renderer::m_corridors_transformation_matrix': redefinition
+C:\Users\jente\source\repos\DrazorV\ComputerGraphics\Source\Renderer.h(57): message : see declaration of 'Renderer::m_corridors_transformation_matrix'
+C:\Users\jente\source\repos\DrazorV\ComputerGraphics\Source\Renderer.h(78,13): error C2086: 'glm::mat4 *Renderer::m_corridors_transformation_normal_matrix': redefinition
+C:\Users\jente\source\repos\DrazorV\ComputerGraphics\Source\Renderer.h(58): message : see declaration of 'Renderer::m_corridors_transformation_normal_matrix'
+  Renderer.cpp
+C:\Users\jente\source\repos\DrazorV\ComputerGraphics\Source\Renderer.h(76,23): error C2086: 'GeometryNode **Renderer::m_corridors_geometry': redefinition
+C:\Users\jente\source\repos\DrazorV\ComputerGraphics\Source\Renderer.h(56): message : see declaration of 'Renderer::m_corridors_geometry'
+C:\Users\jente\source\repos\DrazorV\ComputerGraphics\Source\Renderer.h(77,13): error C2086: 'glm::mat4 *Renderer::m_corridors_transformation_matrix': redefinition
+C:\Users\jente\source\repos\DrazorV\ComputerGraphics\Source\Renderer.h(57): message : see declaration of 'Renderer::m_corridors_transformation_matrix'
+C:\Users\jente\source\repos\DrazorV\ComputerGraphics\Source\Renderer.h(78,13): error C2086: 'glm::mat4 *Renderer::m_corridors_transformation_normal_matrix': redefinition
+C:\Users\jente\source\repos\DrazorV\ComputerGraphics\Source\Renderer.h(58): message : see declaration of 'Renderer::m_corridors_transformation_normal_matrix'
+C:\Users\jente\source\repos\DrazorV\ComputerGraphics\Source\Renderer.cpp(1331,25): warning C4244: '=': conversion from 'int' to 'T', possible loss of data
           with
           [
               T=float
           ]
-C:\Users\jente\source\repos\DrazorV\ComputerGraphics\Source\Renderer.cpp(1278,25): warning C4244: '=': conversion from 'int' to 'T', possible loss of data
+C:\Users\jente\source\repos\DrazorV\ComputerGraphics\Source\Renderer.cpp(1335,25): warning C4244: '=': conversion from 'int' to 'T', possible loss of data
           with
           [
               T=float
           ]
-C:\Users\jente\source\repos\DrazorV\ComputerGraphics\Source\Renderer.cpp(1283,25): warning C4244: '=': conversion from 'int' to 'T', possible loss of data
+C:\Users\jente\source\repos\DrazorV\ComputerGraphics\Source\Renderer.cpp(1340,25): warning C4244: '=': conversion from 'int' to 'T', possible loss of data
           with
           [
               T=float
           ]
-C:\Users\jente\source\repos\DrazorV\ComputerGraphics\Source\Renderer.cpp(1287,25): warning C4244: '=': conversion from 'int' to 'T', possible loss of data
+C:\Users\jente\source\repos\DrazorV\ComputerGraphics\Source\Renderer.cpp(1344,25): warning C4244: '=': conversion from 'int' to 'T', possible loss of data
           with
           [
               T=float
           ]
-  main.cpp
-C:\Users\jente\source\repos\DrazorV\ComputerGraphics\Source\Renderer.h(73,23): error C2086: 'GeometryNode **Renderer::m_corridors_geometry': redefinition
-C:\Users\jente\source\repos\DrazorV\ComputerGraphics\Source\Renderer.h(53): message : see declaration of 'Renderer::m_corridors_geometry'
-C:\Users\jente\source\repos\DrazorV\ComputerGraphics\Source\Renderer.h(74,13): error C2086: 'glm::mat4 *Renderer::m_corridors_transformation_matrix': redefinition
-C:\Users\jente\source\repos\DrazorV\ComputerGraphics\Source\Renderer.h(54): message : see declaration of 'Renderer::m_corridors_transformation_matrix'
-C:\Users\jente\source\repos\DrazorV\ComputerGraphics\Source\Renderer.h(75,13): error C2086: 'glm::mat4 *Renderer::m_corridors_transformation_normal_matrix': redefinition
-C:\Users\jente\source\repos\DrazorV\ComputerGraphics\Source\Renderer.h(55): message : see declaration of 'Renderer::m_corridors_transformation_normal_matrix'
