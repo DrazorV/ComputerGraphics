@@ -4,11 +4,12 @@
 #include "GLEW\glew.h"
 #include "Renderer.h"
 #include <thread>         // std::this_thread::sleep_for
+#include <Windows.h>
 
 using namespace std;
 
 //Screen attributes
-SDL_Window * window;
+SDL_Window* window;
 
 //OpenGL context 
 SDL_GLContext gContext;
@@ -18,7 +19,7 @@ const int SCREEN_HEIGHT = 900;
 //Event handler
 SDL_Event event;
 
-Renderer * renderer = nullptr;
+Renderer* renderer = nullptr;
 
 void func()
 {
@@ -76,7 +77,7 @@ bool init()
 	bool engine_initialized = renderer->Init(SCREEN_WIDTH, SCREEN_HEIGHT);
 
 	//atexit(func);
-	
+
 	return engine_initialized;
 }
 
@@ -90,7 +91,7 @@ void clean_up()
 	SDL_Quit();
 }
 
-int main(int argc, char *argv[])
+int main(int argc, char* argv[])
 {
 	//Initialize
 	if (init() == false)
@@ -103,9 +104,9 @@ int main(int argc, char *argv[])
 	bool quit = false;
 	bool mouse_button_pressed = false;
 	glm::vec2 prev_mouse_position(0);
+	SDL_SetRelativeMouseMode(SDL_TRUE);
 
 	auto simulation_start = chrono::steady_clock::now();
-
 	// Wait for user exit
 	while (quit == false)
 	{
@@ -131,7 +132,7 @@ int main(int argc, char *argv[])
 				else if (event.key.keysym.sym == SDLK_s || event.key.keysym.sym == SDLK_DOWN)
 				{
 					renderer->CameraMoveBackWard(true);
-				}	
+				}
 				else if (event.key.keysym.sym == SDLK_a || event.key.keysym.sym == SDLK_LEFT)
 				{
 					renderer->CameraMoveLeft(true);
@@ -163,10 +164,10 @@ int main(int argc, char *argv[])
 			}
 			else if (event.type == SDL_MOUSEMOTION)
 			{
-				int x = event.motion.x;
-				int y = event.motion.y;
-				renderer->CameraLook(glm::vec2(x, y) - prev_mouse_position);
-				prev_mouse_position = glm::vec2(x, y);
+				int x = event.motion.xrel;
+				int y = event.motion.yrel;
+				renderer->CameraLook(glm::vec2(x, y));
+
 			}
 			else if (event.type == SDL_MOUSEWHEEL)
 			{
@@ -182,6 +183,8 @@ int main(int argc, char *argv[])
 			}
 		}
 
+
+
 		// Compute the ellapsed time
 		auto simulation_end = chrono::steady_clock::now();
 		float dt = chrono::duration <float>(simulation_end - simulation_start).count(); // in seconds
@@ -192,7 +195,7 @@ int main(int argc, char *argv[])
 
 		// Draw
 		renderer->Render();
-		
+
 		//Update screen (swap buffer for double buffering)
 		SDL_GL_SwapWindow(window);
 	}

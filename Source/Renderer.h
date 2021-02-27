@@ -49,6 +49,7 @@ protected:
 	class GeometryNode** m_wall_geometry;
 	glm::mat4* m_wall_transformation_matrix;
 	glm::mat4* m_wall_transformation_normal_matrix;
+
 	class GeometryNode** m_corridors_geometry;
 	glm::mat4* m_corridors_transformation_matrix;
 	glm::mat4* m_corridors_transformation_normal_matrix;
@@ -69,6 +70,10 @@ protected:
 	glm::mat4* m_cannon_mount_transformation_matrix;
 	glm::mat4* m_cannon_mount_transformation_normal_matrix;
 
+	class GeometryNode** m_corridors_geometry;
+	glm::mat4* m_corridors_transformation_matrix;
+	glm::mat4* m_corridors_transformation_normal_matrix;
+
 	class GeometryNode** m_corridor_fork_geometry;
 	glm::mat4* m_corridor_fork_transformation_matrix;
 	glm::mat4* m_corridor_fork_transformation_normal_matrix;
@@ -81,9 +86,27 @@ protected:
 	glm::mat4* m_corridor_right_transformation_matrix;
 	glm::mat4* m_corridor_right_transformation_normal_matrix;
 
+	class GeometryNode** m_corridorsCW_geometry;
+	glm::mat4* m_corridorsCW_transformation_matrix;
+	glm::mat4* m_corridorsCW_transformation_normal_matrix;
+
+	/*class GeometryNode** m_corridorCW_fork_geometry;
+	glm::mat4* m_corridor_forkCW_transformation_matrix;
+	glm::mat4* m_corridor_forkCW_transformation_normal_matrix;
+
+	class GeometryNode** m_corridorCW_left_geometry;
+	glm::mat4* m_corridor_leftCW_transformation_matrix;
+	glm::mat4* m_corridor_leftCW_transformation_normal_matrix;
+
+	class GeometryNode** m_corridor_rightCW_geometry;
+	glm::mat4* m_corridor_rightCW_transformation_matrix;
+	glm::mat4* m_corridor_rightCW_transformation_normal_matrix;*/
+
 	class GeometryNode** m_iris_geometry;
 	glm::mat4* m_iris_transformation_matrix;
 	glm::mat4* m_iris_transformation_normal_matrix;
+
+
 
 	// Protected Functions
 	bool InitRenderingTechniques();
@@ -98,6 +121,7 @@ protected:
 
 public:
 	Renderer();
+	float										timeElapsed;
 	~Renderer();
 	bool										Init(int SCREEN_WIDTH, int SCREEN_HEIGHT);
 	void										Update(float dt);
