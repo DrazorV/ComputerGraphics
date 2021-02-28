@@ -90,7 +90,7 @@
     <ClInclude Include="Source\Tools.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="CollidableNode.h">
+    <ClInclude Include="Source\CollidableNode.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

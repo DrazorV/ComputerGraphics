@@ -184,7 +184,7 @@
     <ClCompile Include="Source\Tools.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="CollidableNode.h" />
+    <ClInclude Include="Source\CollidableNode.h" />
     <ClInclude Include="Source\GeometricMesh.h" />
     <ClInclude Include="Source\GeometryNode.h" />
     <ClInclude Include="Source\OBJLoader.h" />

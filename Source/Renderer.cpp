@@ -277,7 +277,6 @@ bool Renderer::Init(int SCREEN_WIDTH, int SCREEN_HEIGHT)
 
 void Renderer::InitCamera()
 {
-	
 	this->m_camera_position = glm::vec3(0, 4, -10);
 	this->m_camera_target_position = glm::vec3(0, 1, 1);
 	this->m_camera_up_vector = glm::vec3(0, 1, 0);
@@ -349,8 +348,6 @@ void Renderer::UpdateCamera(float dt)
 	float movement_speed = 25.5f;
 	glm::vec3 direction = glm::normalize(m_camera_target_position - m_camera_position);
 
-
-	
 	m_camera_position += m_camera_movement.x * movement_speed * direction * dt;
 	m_camera_target_position += m_camera_movement.x * movement_speed * direction * dt;
 
@@ -724,6 +721,9 @@ void Renderer::Render()
 
 	// Draw the geometry
 	RenderGeometry();
+
+	// Draw the collision
+	RenderCollidableGeometry();
 
 	// render to screen                    **********************************************
 	RenderToOutFB();
@@ -1242,28 +1242,25 @@ void Renderer::RenderGeometry()
 
 void Renderer::RenderCollidableGeometry()
 {
-	glm::vec3 camera_dir = normalize(m_camera_target_position - m_camera_position);
-	float_t isectT = 0.f;
-
+	m_geometry_program.Bind();
+	//glm::vec3 camera_dir = normalize(m_camera_target_position - m_camera_position);
+	
 	for (int i = 0; i < 6; i++)
 	{
-		//if (m_corridorsCH_geometry[i]->intersectRay(m_camera_position, camera_dir, m_view_matrix, isectT)) continue;
+		float_t isectT = 0.f;
+		int32_t primID = -1;
+		int32_t totalRenderedPrims = 0;
+		float_t isectT = 0.f;
+		if (m_corridorsCH_geometry[i]->intersectRay(m_camera_position, camera_dir, isectT, primID)) {
+			this->InitCamera();
+		}
 		
 		glBindVertexArray(m_corridorsCH_geometry[i]->m_vao);
-		glUniformMatrix4fv(m_geometry_program["uniform_model_matrix"], 1, GL_FALSE, glm::value_ptr(m_corridors_transformation_matrix[i]));
-		glUniformMatrix4fv(m_geometry_program["uniform_normal_matrix"], 1, GL_FALSE, glm::value_ptr(m_corridors_transformation_normal_matrix[i]));
+		glUniformMatrix4fv(m_geometry_program["uniform_model_matrix"], 1, GL_FALSE, glm::value_ptr(m_corridorsCH_transformation_matrix[i]));
+		glUniformMatrix4fv(m_geometry_program["uniform_normal_matrix"], 1, GL_FALSE, glm::value_ptr(m_corridorsCH_transformation_normal_matrix[i]));
 		
 		for (int j = 0; j < m_corridorsCH_geometry[i]->parts.size(); ++j)
 		{
-			glm::vec3 diffuseColor = m_corridorsCH_geometry[i]->parts[j].diffuse;
-			glm::vec3 specularColor = m_corridorsCH_geometry[i]->parts[j].specular;
-			float shininess = m_corridorsCH_geometry[i]->parts[j].shininess;
-			glm::vec3 ambient = m_corridorsCH_geometry[i]->parts[j].ambient;
-
-			glUniform3f(m_geometry_program["uniform_ambient"], ambient.r, ambient.g, ambient.b);
-			glUniform3f(m_geometry_program["uniform_diffuse"], diffuseColor.r, diffuseColor.g, diffuseColor.b);
-			glUniform3f(m_geometry_program["uniform_specular"], specularColor.r, specularColor.g, specularColor.b);
-			glUniform1f(m_geometry_program["uniform_shininess"], shininess);
 			glUniform1f(m_geometry_program["uniform_has_texture"], (m_corridorsCH_geometry[i]->parts[j].diffuse_textureID > 0) ? 1.0f : 0.0f);
 			glUniform1i(m_geometry_program["uniform_has_tex_normal"], (m_corridorsCH_geometry[i]->parts[j].bump_textureID > 0 || m_corridorsCH_geometry[i]->parts[j].normal_textureID > 0) ? 1 : 0);
 			glUniform1i(m_geometry_program["uniform_is_tex_bumb"], (m_corridorsCH_geometry[i]->parts[j].bump_textureID > 0) ? 1 : 0);
@@ -1271,17 +1268,17 @@ void Renderer::RenderCollidableGeometry()
 			glActiveTexture(GL_TEXTURE0);
 			glUniform1i(m_geometry_program["uniform_diffuse_texture"], 0);
 			glBindTexture(GL_TEXTURE_2D, m_corridorsCH_geometry[i]->parts[j].diffuse_textureID);
-
+			
+			
 			glActiveTexture(GL_TEXTURE1);
 			glUniform1i(m_geometry_program["uniform_tex_normal"], 1);
-			glBindTexture(GL_TEXTURE_2D, m_corridorsCH_geometry[i]->parts[j].bump_textureID > 0 ?
-				m_corridorsCH_geometry[i]->parts[j].bump_textureID : m_corridorsCH_geometry[i]->parts[j].normal_textureID);
-
-			glDrawArrays(GL_TRIANGLES, m_corridorsCH_geometry[i]->parts[j].start_offset, m_corridorsCH_geometry[i]->parts[j].count);
+			glBindTexture(GL_TEXTURE_2D, m_corridorsCH_geometry[i]->parts[j].bump_textureID > 0 ?m_corridorsCH_geometry[i]->parts[j].bump_textureID : m_corridorsCH_geometry[i]->parts[j].normal_textureID);
 		}
-
+		
 		glBindVertexArray(0);
 	}
+	
+	
 }
 
 void Renderer::RenderToOutFB()

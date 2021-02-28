@@ -26,7 +26,6 @@ void CollidableNode::Init(class GeometricMesh* mesh)
 bool CollidableNode::intersectRay(
     const glm::vec3& pOrigin_wcs,
     const glm::vec3& pDir_wcs,
-    const glm::mat4& pWorldMatrix,
     float& pIsectDist,
     int32_t& pPrimID,
     float pTmax,
@@ -36,7 +35,7 @@ bool CollidableNode::intersectRay(
 
     const glm::vec3 normDir = glm::normalize(pDir_wcs);
 
-    const glm::mat4 wordToModel = glm::inverse(pWorldMatrix * super::app_model_matrix);
+    const glm::mat4 wordToModel = super::app_model_matrix;
     const glm::vec3 o_local = wordToModel * glm::vec4(pOrigin_wcs, 1.f);
     const glm::vec3 d_local = glm::normalize(glm::vec3(wordToModel * glm::vec4(normDir, 0.f)));
 
@@ -68,7 +67,7 @@ bool CollidableNode::intersectRay(
 
     if (found_isect)
     {
-        glm::vec3 isec_wcs = pWorldMatrix * super::app_model_matrix * glm::vec4(isect, 1.f);
+        glm::vec3 isec_wcs = super::app_model_matrix * glm::vec4(isect, 1.f);
         pIsectDist = glm::distance(pOrigin_wcs, isec_wcs);
     }
 
