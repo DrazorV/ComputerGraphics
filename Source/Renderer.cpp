@@ -117,10 +117,8 @@ Renderer::Renderer()
 	m_fbo_texture = 0;
 
 	m_rendering_mode = RENDERING_MODE::TRIANGLES;
-	m_continous_time = 0.0;
-	m_camera_position = glm::vec3(0, 4, -10);
-	m_camera_target_position = glm::vec3(0, 1, 1);
-	m_camera_up_vector = glm::vec3(0, 1, 0);
+	this->m_continous_time = 0.0;
+	
 }
 
 Renderer::~Renderer()
@@ -273,11 +271,189 @@ bool Renderer::Init(int SCREEN_WIDTH, int SCREEN_HEIGHT)
 		return false;
 	}
 
+	this->BuildWorld();
+	this->InitCamera();
+
 	//If everything initialized
 	return techniques_initialization && items_initialization && buffers_initialization;
 }
 
+void Renderer::BuildWorld()
+{
+	for (int i = 0; i < 4; i++) {
+		glm::mat4 corridors_trans = glm::translate(glm::mat4(1.0), glm::vec3(0, 0, i * 20));
+
+		m_corridors_transformation_matrix[i] = glm::translate(glm::mat4(1.0), glm::vec3(-1, 0, 0)) * corridors_trans;
+		m_corridors_transformation_normal_matrix[i] = glm::mat4(glm::transpose(glm::inverse(glm::mat3(m_corridors_transformation_matrix[i]))));
+	}
+
+	m_corridors_transformation_matrix[4] = glm::translate(glm::mat4(1.0), glm::vec3(9, 0, 120));
+	m_corridors_transformation_normal_matrix[4] = glm::mat4(glm::transpose(glm::inverse(glm::mat3(m_corridors_transformation_matrix[4]))));
+
+	m_corridors_transformation_matrix[5] = glm::translate(glm::mat4(1.0), glm::vec3(9, 0, 140));
+	m_corridors_transformation_normal_matrix[5] = glm::mat4(glm::transpose(glm::inverse(glm::mat3(m_corridors_transformation_matrix[5]))));
+
+	for (int i = 0; i < 4; i++) {
+		m_corridorsCH_transformation_matrix[i] = m_corridors_transformation_matrix[i];
+		m_corridorsCH_transformation_normal_matrix[i] = m_corridors_transformation_normal_matrix[i];
+	}
+
+	m_corridorsCH_transformation_matrix[4] = m_corridors_transformation_matrix[4];
+	m_corridorsCH_transformation_normal_matrix[4] = m_corridors_transformation_normal_matrix[4];
+
+	m_corridorsCH_transformation_matrix[5] = m_corridors_transformation_matrix[5];
+	m_corridorsCH_transformation_normal_matrix[5] = m_corridors_transformation_normal_matrix[5];
+
+	glm::mat4 RotY = glm::rotate(glm::mat4(1.f), glm::radians(90.f), glm::vec3(1.f, 0.f, 0.f));
+
+	glm::mat4 cannonMount_translation = glm::translate(glm::mat4(1.0), glm::vec3(1, 2, 78.8));
+	m_cannon_mount_transformation_matrix[0] = glm::translate(glm::mat4(1.0), glm::vec3(1, 1, 1)) * cannonMount_translation * RotY;
+	m_cannon_mount_transformation_normal_matrix[0] = glm::mat4(glm::transpose(glm::inverse(glm::mat3(m_cannon_mount_transformation_matrix[0]))));
+
+	RotY = glm::rotate(glm::mat4(1.f), glm::radians(180.f), glm::vec3(1.f, 0.f, 0.f));
+	cannonMount_translation = glm::translate(glm::mat4(1.0), glm::vec3(-2.25, -1.75, 13));
+	m_cannon_mount_transformation_matrix[1] = glm::translate(glm::mat4(1.0), glm::vec3(1, 0, 1)) * cannonMount_translation * RotY;
+	m_cannon_mount_transformation_normal_matrix[1] = glm::mat4(glm::transpose(glm::inverse(glm::mat3(m_cannon_mount_transformation_matrix[1]))));
+	
+	glm::mat4 RotX = glm::rotate(glm::mat4(1.f), glm::radians(35.f), glm::vec3(1.f, 0.f, 0.f));
+	RotY = glm::rotate(glm::mat4(1.f), glm::radians(180.f), glm::vec3(0.f, 1.f, 0.f));
+	glm::mat4 RotZ = glm::rotate(glm::mat4(1.f), glm::radians(180.f), glm::vec3(0.f, 0.f, 1.f));
+
+	glm::mat4 cannon_translation = glm::translate(glm::mat4(1.0), glm::vec3(1, 3, 78.7));
+	m_cannon_transformation_matrix[0] = glm::translate(glm::mat4(1.0), glm::vec3(1, 0, 0)) * cannon_translation * RotY * RotX;
+	m_cannon_transformation_normal_matrix[0] = glm::mat4(glm::transpose(glm::inverse(glm::mat3(m_cannon_transformation_matrix[0]))));
+
+	RotX = glm::rotate(glm::mat4(1.f), glm::radians(-2.5f), glm::vec3(1.f, 0.f, 0.f));
+	cannon_translation = glm::translate(glm::mat4(1.0), glm::vec3(-3, -0.5, 14));
+	m_cannon_transformation_matrix[1] = glm::translate(glm::mat4(1.0), glm::vec3(1, 0, 0)) * cannon_translation * RotY * RotX * ball_rotation;
+	m_cannon_transformation_normal_matrix[1] = glm::mat4(glm::transpose(glm::inverse(glm::mat3(m_cannon_transformation_matrix[1]))));
+
+	cannon_translation = glm::translate(glm::mat4(1.0), glm::vec3(-1.5, -0.5, 14));
+	m_cannon_transformation_matrix[2] = glm::translate(glm::mat4(1.0), glm::vec3(1, 0, 0)) * cannon_translation * RotY * RotX;
+	m_cannon_transformation_normal_matrix[2] = glm::mat4(glm::transpose(glm::inverse(glm::mat3(m_cannon_transformation_matrix[2]))));
+
+	glm::mat4 beam_trans = glm::translate(glm::mat4(1.0), glm::vec3(-5, -3.5, 10));
+	RotY = glm::rotate(glm::mat4(1.f), glm::radians(135.f), glm::vec3(0.f, 1.f, 0.f));
+	RotX = glm::rotate(glm::mat4(1.f), glm::radians(90.f), glm::vec3(1.f, 0.f, 0.f));
+	m_beam_transformation_matrix[0] = glm::translate(glm::mat4(1.0), glm::vec3(1, 0, 1)) * beam_trans * RotY * RotX;
+	m_beam_transformation_normal_matrix[0] = glm::mat4(glm::transpose(glm::inverse(glm::mat3(m_beam_transformation_matrix[0]))));
+
+
+	RotZ = glm::rotate(glm::mat4(1.f), glm::radians(90.f), glm::vec3(0.f, 0.f, 1.f));
+	m_beam_transformation_matrix[1] = glm::translate(glm::mat4(1.0), glm::vec3(4, 0, 70)) * beam_trans * RotZ; //* Rotb * Rotc;
+	m_beam_transformation_normal_matrix[1] = glm::mat4(glm::transpose(glm::inverse(glm::mat3(m_beam_transformation_matrix[1]))));
+
+	RotZ = glm::rotate(glm::mat4(1.f), glm::radians(90.f), glm::vec3(0.f, 0.f, 1.f));
+	m_beam_transformation_matrix[2] = glm::translate(glm::mat4(1.0), glm::vec3(-11, 0, 120)) * RotZ; //* Rotb * Rotc;
+	m_beam_transformation_normal_matrix[2] = glm::mat4(glm::transpose(glm::inverse(glm::mat3(m_beam_transformation_matrix[2]))));
+
+	RotZ = glm::rotate(glm::mat4(1.f), glm::radians(90.f), glm::vec3(0.f, 0.f, 1.f));
+	m_beam_transformation_matrix[3] = glm::translate(glm::mat4(1.0), glm::vec3(9, 5, 130)) * beam_trans * RotZ; //* Rotb * Rotc;
+	m_beam_transformation_normal_matrix[3] = glm::mat4(glm::transpose(glm::inverse(glm::mat3(m_beam_transformation_matrix[3]))));
+
+	m_beam_transformation_matrix[4] = glm::translate(glm::mat4(1.0), glm::vec3(-5, 3, 100)) * beam_trans * RotZ * RotX; //* Rotb * Rotc;
+	m_beam_transformation_normal_matrix[4] = glm::mat4(glm::transpose(glm::inverse(glm::mat3(m_beam_transformation_matrix[4]))));
+
+	RotY = glm::rotate(glm::mat4(1.f), glm::radians(135.f), glm::vec3(0.f, 1.f, 0.f));
+	RotX = glm::rotate(glm::mat4(1.f), glm::radians(90.f), glm::vec3(1.f, 0.f, 0.f));
+	m_beam_transformation_matrix[5] = glm::translate(glm::mat4(1.0), glm::vec3(-5, -3.5, 100)) * RotY * RotX;
+	m_beam_transformation_normal_matrix[5] = glm::mat4(glm::transpose(glm::inverse(glm::mat3(m_beam_transformation_matrix[5]))));
+
+	m_beam_transformation_matrix[6] = glm::translate(glm::mat4(1.0), glm::vec3(2.2, -12, 120));
+	m_beam_transformation_normal_matrix[6] = glm::mat4(glm::transpose(glm::inverse(glm::mat3(m_beam_transformation_matrix[6]))));
+
+	RotY = glm::rotate(glm::mat4(1.f), glm::radians(180.f), glm::vec3(0.f, 1.f, 0.f));
+
+	m_iris_transformation_matrix[0] = glm::translate(glm::mat4(1.0), glm::vec3(2, -3.1, 79.9)) * RotY;
+	m_iris_transformation_normal_matrix[0] = glm::mat4(glm::transpose(glm::inverse(glm::mat3(m_iris_transformation_matrix[0]))));
+
+	m_iris_transformation_matrix[1] = glm::translate(glm::mat4(1.0), glm::vec3(2, -0.1, 79.9)) * RotY;
+	m_iris_transformation_normal_matrix[1] = glm::mat4(glm::transpose(glm::inverse(glm::mat3(m_iris_transformation_matrix[1]))));
+
+	m_iris_transformation_matrix[2] = glm::translate(glm::mat4(1.0), glm::vec3(-14, -3.1, 119.8)) * RotY;
+	m_iris_transformation_normal_matrix[2] = glm::mat4(glm::transpose(glm::inverse(glm::mat3(m_iris_transformation_matrix[2]))));
+
+	m_iris_transformation_matrix[3] = glm::translate(glm::mat4(1.0), glm::vec3(-14, 3.1, 119.8)) * RotY;
+	m_iris_transformation_normal_matrix[3] = glm::mat4(glm::transpose(glm::inverse(glm::mat3(m_iris_transformation_matrix[3]))));
+
+}
+
+
+void Renderer::InitCamera()
+{
+	this->m_camera_position = glm::vec3(0, 4, -10);
+	this->m_camera_target_position = glm::vec3(0, 1, 1);
+	this->m_camera_up_vector = glm::vec3(0, 1, 0);
+
+	this->m_view_matrix = glm::lookAt(
+		this->m_camera_position,
+		this->m_camera_target_position,
+		m_camera_up_vector);
+
+	this->m_projection_matrix = glm::perspective(
+		glm::radians(45.f),
+		this->m_screen_width / (float)this->m_screen_height,
+		0.1f, 100.f);
+}
+
 void Renderer::Update(float dt)
+{
+
+	this->UpdateGeometry(dt);
+	this->UpdateCamera(dt);
+	m_continous_time += dt;
+}
+void Renderer::UpdateGeometry(float dt)
+{
+	glm::mat4 wall_translation;
+	int duration = 5000;
+	glm::mat4 RotY = glm::rotate(glm::mat4(1.f), glm::radians(180.f), glm::vec3(0.f, 1.f, 0.f));
+	if (timeElapsed < duration) {
+		wall_translation = glm::translate(glm::mat4(1.0), glm::vec3(14 - (timeElapsed / 1000), 0, 80));
+		m_wall_transformation_matrix[3] = glm::translate(glm::mat4(1.0), glm::vec3(-1, 0, 0)) * wall_translation;
+		m_wall_transformation_normal_matrix[3] = glm::mat4(glm::transpose(glm::inverse(glm::mat3(m_wall_transformation_matrix[3]))));
+		m_wallCH_transformation_matrix[3] = m_wall_transformation_matrix[3];
+		m_wallCH_transformation_normal_matrix[3] = m_wall_transformation_normal_matrix[3];
+		//(11, 0, 110))
+		m_wall_transformation_matrix[13] = glm::translate(glm::mat4(1.0), glm::vec3(21 - (duration * 2 - timeElapsed) / 1000, 0, 110));
+		m_wall_transformation_normal_matrix[13] = glm::mat4(glm::transpose(glm::inverse(glm::mat3(m_wall_transformation_matrix[13]))));
+		m_wallCH_transformation_matrix[13] = m_wall_transformation_matrix[3];
+		m_wallCH_transformation_normal_matrix[13] = m_wall_transformation_normal_matrix[13];
+
+		m_iris_transformation_matrix[2] = glm::translate(glm::mat4(1.0), glm::vec3(-14, -3.1, 119.8 - (timeElapsed / 1000))) * RotY;
+		m_iris_transformation_normal_matrix[2] = glm::mat4(glm::transpose(glm::inverse(glm::mat3(m_iris_transformation_matrix[2]))));
+
+		m_iris_transformation_matrix[3] = glm::translate(glm::mat4(1.0), glm::vec3(-14, 3.1, 119.8 - (duration * 2 - timeElapsed) / 1000)) * RotY;
+		m_iris_transformation_normal_matrix[3] = glm::mat4(glm::transpose(glm::inverse(glm::mat3(m_iris_transformation_matrix[3]))));
+
+		timeElapsed++;
+	}
+	else if (timeElapsed < duration * 2) {
+
+		wall_translation = glm::translate(glm::mat4(1.0), glm::vec3(14 - ((duration * 2 - timeElapsed) / 1000), 0, 80));
+		m_wall_transformation_matrix[3] = glm::translate(glm::mat4(1.0), glm::vec3(-1, 0, 0)) * wall_translation;
+		m_wall_transformation_normal_matrix[3] = glm::mat4(glm::transpose(glm::inverse(glm::mat3(m_wall_transformation_matrix[3]))));
+		m_wallCH_transformation_matrix[3] = m_wall_transformation_matrix[3];
+		m_wallCH_transformation_normal_matrix[3] = m_wall_transformation_normal_matrix[3];
+		m_wall_transformation_matrix[13] = glm::translate(glm::mat4(1.0), glm::vec3(21 - (timeElapsed / 1000), 0, 110));
+		m_wall_transformation_normal_matrix[13] = glm::mat4(glm::transpose(glm::inverse(glm::mat3(m_wall_transformation_matrix[13]))));
+
+		m_wallCH_transformation_matrix[13] = m_wall_transformation_matrix[3];
+		m_wallCH_transformation_normal_matrix[13] = m_wall_transformation_normal_matrix[13];
+		m_iris_transformation_matrix[2] = glm::translate(glm::mat4(1.0), glm::vec3(-14, -3.1, 119.8 - (duration * 2 - timeElapsed) / 1000)) * RotY;
+		m_iris_transformation_normal_matrix[2] = glm::mat4(glm::transpose(glm::inverse(glm::mat3(m_iris_transformation_matrix[2]))));
+
+		m_iris_transformation_matrix[3] = glm::translate(glm::mat4(1.0), glm::vec3(-14, 3.1, 119.8 - (timeElapsed / 1000))) * RotY;
+		m_iris_transformation_normal_matrix[3] = glm::mat4(glm::transpose(glm::inverse(glm::mat3(m_iris_transformation_matrix[3]))));
+
+		timeElapsed++;
+	}
+	else if (timeElapsed < duration * 4) {
+		timeElapsed = 0;
+	}
+}
+
+void Renderer::UpdateCamera(float dt)
 {
 	float movement_speed = 25.5f;
 	glm::vec3 direction = glm::normalize(m_camera_target_position - m_camera_position);
@@ -301,55 +477,6 @@ void Renderer::Update(float dt)
 	m_camera_target_position = m_camera_position + direction * dist;
 
 	m_view_matrix = glm::lookAt(m_camera_position, m_camera_target_position, m_camera_up_vector);
-	glm::mat4 wall_translation;
-
-	int duration = 5000;
-	glm::mat4 RotY = glm::rotate(glm::mat4(1.f), glm::radians(180.f), glm::vec3(0.f, 1.f, 0.f));
-	if (timeElapsed < duration) {
-		wall_translation = glm::translate(glm::mat4(1.0), glm::vec3(14 - (timeElapsed / 1000), 0, 80));
-		m_wall_transformation_matrix[3] = glm::translate(glm::mat4(1.0), glm::vec3(-1, 0, 0)) * wall_translation;
-		m_wall_transformation_normal_matrix[3] = glm::mat4(glm::transpose(glm::inverse(glm::mat3(m_wall_transformation_matrix[3]))));
-		m_wallCH_transformation_matrix[3] = m_wall_transformation_matrix[3];
-		m_wallCH_transformation_normal_matrix[3] = m_wall_transformation_normal_matrix[3];
-		//(11, 0, 110))
-		m_wall_transformation_matrix[13] = glm::translate(glm::mat4(1.0), glm::vec3(21 - (duration * 2 - timeElapsed) / 1000, 0, 110));
-		m_wall_transformation_normal_matrix[13] = glm::mat4(glm::transpose(glm::inverse(glm::mat3(m_wall_transformation_matrix[13]))));
-		m_wallCH_transformation_matrix[13] = m_wall_transformation_matrix[3];
-		m_wallCH_transformation_normal_matrix[13] = m_wall_transformation_normal_matrix[13];
-
-		m_iris_transformation_matrix[2] = glm::translate(glm::mat4(1.0), glm::vec3(-14, -3.1, 119.8 - (timeElapsed / 1000))) * RotY;
-		m_iris_transformation_normal_matrix[2] = glm::mat4(glm::transpose(glm::inverse(glm::mat3(m_iris_transformation_matrix[2]))));
-		
-		m_iris_transformation_matrix[3] = glm::translate(glm::mat4(1.0), glm::vec3(-14, 3.1, 119.8 - (duration * 2 - timeElapsed) / 1000)) * RotY;
-		m_iris_transformation_normal_matrix[3] = glm::mat4(glm::transpose(glm::inverse(glm::mat3(m_iris_transformation_matrix[3]))));
-	
-		timeElapsed++;
-	}
-	else if (timeElapsed < duration * 2) {
-
-		wall_translation = glm::translate(glm::mat4(1.0), glm::vec3(14 - ((duration * 2 - timeElapsed) / 1000), 0, 80));
-		m_wall_transformation_matrix[3] = glm::translate(glm::mat4(1.0), glm::vec3(-1, 0, 0)) * wall_translation;
-		m_wall_transformation_normal_matrix[3] = glm::mat4(glm::transpose(glm::inverse(glm::mat3(m_wall_transformation_matrix[3]))));
-		m_wallCH_transformation_matrix[3] = m_wall_transformation_matrix[3];
-		m_wallCH_transformation_normal_matrix[3] = m_wall_transformation_normal_matrix[3];
-		m_wall_transformation_matrix[13] = glm::translate(glm::mat4(1.0), glm::vec3(21 - (timeElapsed / 1000), 0, 110));
-		m_wall_transformation_normal_matrix[13] = glm::mat4(glm::transpose(glm::inverse(glm::mat3(m_wall_transformation_matrix[13]))));
-		
-		m_wallCH_transformation_matrix[13] = m_wall_transformation_matrix[3];
-		m_wallCH_transformation_normal_matrix[13] = m_wall_transformation_normal_matrix[13];
-		m_iris_transformation_matrix[2] = glm::translate(glm::mat4(1.0), glm::vec3(-14, -3.1, 119.8 - (duration * 2 - timeElapsed)/1000)) * RotY;
-		m_iris_transformation_normal_matrix[2] = glm::mat4(glm::transpose(glm::inverse(glm::mat3(m_iris_transformation_matrix[2]))));
-
-		m_iris_transformation_matrix[3] = glm::translate(glm::mat4(1.0), glm::vec3(-14, 3.1, 119.8 - (timeElapsed / 1000))) * RotY;
-		m_iris_transformation_normal_matrix[3] = glm::mat4(glm::transpose(glm::inverse(glm::mat3(m_iris_transformation_matrix[3]))));
-
-		timeElapsed++;
-	}
-	else if (timeElapsed < duration * 4) {
-		timeElapsed = 0;
-	}
-
-	m_continous_time += dt;
 }
 
 bool Renderer::InitCommonItems()
@@ -520,19 +647,6 @@ bool Renderer::InitGeometricMeshes()
 		else
 			initialized = false;
 	}
-	for (int i = 0; i < 4; i++) {
-		glm::mat4 corridors_trans = glm::translate(glm::mat4(1.0), glm::vec3(0, 0, i * 20));
-
-		m_corridors_transformation_matrix[i] = glm::translate(glm::mat4(1.0), glm::vec3(-1, 0, 0)) * corridors_trans;
-		m_corridors_transformation_normal_matrix[i] = glm::mat4(glm::transpose(glm::inverse(glm::mat3(m_corridors_transformation_matrix[i]))));
-	}
-
-	m_corridors_transformation_matrix[4] = glm::translate(glm::mat4(1.0), glm::vec3(9, 0, 120));
-	m_corridors_transformation_normal_matrix[4] = glm::mat4(glm::transpose(glm::inverse(glm::mat3(m_corridors_transformation_matrix[4]))));
-
-	m_corridors_transformation_matrix[5] = glm::translate(glm::mat4(1.0), glm::vec3(9, 0, 140));
-	m_corridors_transformation_normal_matrix[5] = glm::mat4(glm::transpose(glm::inverse(glm::mat3(m_corridors_transformation_matrix[5]))));
-
 	delete mesh;
 	mesh = loader.load("Assets/Objects/CH-Corridor_Straight.obj");
 	for (int i = 0; i < 6; i++) {
@@ -544,18 +658,6 @@ bool Renderer::InitGeometricMeshes()
 		else
 			initialized = false;
 	}
-	for (int i = 0; i < 4; i++) {
-		;
-
-		m_corridorsCH_transformation_matrix[i] = m_corridors_transformation_matrix[i] ;
-		m_corridorsCH_transformation_normal_matrix[i] = m_corridors_transformation_normal_matrix[i];
-	}
-
-	m_corridorsCH_transformation_matrix[4] = m_corridors_transformation_matrix[4];
-	m_corridorsCH_transformation_normal_matrix[4] =  m_corridors_transformation_normal_matrix[4];
-
-	m_corridorsCH_transformation_matrix[5] = m_corridors_transformation_matrix[5];
-	m_corridorsCH_transformation_normal_matrix[5] = m_corridors_transformation_normal_matrix[5];
 
 	delete mesh;
 	//load cannon mounts
@@ -570,17 +672,7 @@ bool Renderer::InitGeometricMeshes()
 		else
 			initialized = false;
 	}
-	glm::mat4 RotY = glm::rotate(glm::mat4(1.f), glm::radians(90.f), glm::vec3(1.f, 0.f, 0.f));
-
-	glm::mat4 cannonMount_translation = glm::translate(glm::mat4(1.0), glm::vec3(1, 2, 78.8));
-	m_cannon_mount_transformation_matrix[0] = glm::translate(glm::mat4(1.0), glm::vec3(1, 1, 1)) * cannonMount_translation * RotY;
-	m_cannon_mount_transformation_normal_matrix[0] = glm::mat4(glm::transpose(glm::inverse(glm::mat3(m_cannon_mount_transformation_matrix[0]))));
-
-	RotY = glm::rotate(glm::mat4(1.f), glm::radians(180.f), glm::vec3(1.f, 0.f, 0.f));
-	cannonMount_translation = glm::translate(glm::mat4(1.0), glm::vec3(-2.25, -1.75, 13));
-	m_cannon_mount_transformation_matrix[1] = glm::translate(glm::mat4(1.0), glm::vec3(1, 0, 1)) * cannonMount_translation * RotY;
-	m_cannon_mount_transformation_normal_matrix[1] = glm::mat4(glm::transpose(glm::inverse(glm::mat3(m_cannon_mount_transformation_matrix[1]))));
-
+	
 	//glm::translate(glm::mat4(1.0), glm::vec3(2.2, -12, 120));
 
 	delete mesh;
@@ -596,22 +688,6 @@ bool Renderer::InitGeometricMeshes()
 		else
 			initialized = false;
 	}
-	glm::mat4 RotX = glm::rotate(glm::mat4(1.f), glm::radians(35.f), glm::vec3(1.f, 0.f, 0.f));
-	RotY = glm::rotate(glm::mat4(1.f), glm::radians(180.f), glm::vec3(0.f, 1.f, 0.f));
-	glm::mat4 RotZ = glm::rotate(glm::mat4(1.f), glm::radians(180.f), glm::vec3(0.f, 0.f, 1.f));
-
-	glm::mat4 cannon_translation = glm::translate(glm::mat4(1.0), glm::vec3(1, 3, 78.7));
-	m_cannon_transformation_matrix[0] = glm::translate(glm::mat4(1.0), glm::vec3(1, 0, 0)) * cannon_translation * RotY * RotX;
-	m_cannon_transformation_normal_matrix[0] = glm::mat4(glm::transpose(glm::inverse(glm::mat3(m_cannon_transformation_matrix[0]))));
-
-	RotX = glm::rotate(glm::mat4(1.f), glm::radians(-2.5f), glm::vec3(1.f, 0.f, 0.f));
-	cannon_translation = glm::translate(glm::mat4(1.0), glm::vec3(-3, -0.5, 14));
-	m_cannon_transformation_matrix[1] = glm::translate(glm::mat4(1.0), glm::vec3(1, 0, 0)) * cannon_translation * RotY * RotX * ball_rotation;
-	m_cannon_transformation_normal_matrix[1] = glm::mat4(glm::transpose(glm::inverse(glm::mat3(m_cannon_transformation_matrix[1]))));
-
-	cannon_translation = glm::translate(glm::mat4(1.0), glm::vec3(-1.5, -0.5, 14));
-	m_cannon_transformation_matrix[2] = glm::translate(glm::mat4(1.0), glm::vec3(1, 0, 0)) * cannon_translation * RotY * RotX;
-	m_cannon_transformation_normal_matrix[2] = glm::mat4(glm::transpose(glm::inverse(glm::mat3(m_cannon_transformation_matrix[2]))));
 	delete mesh;
 
 	//load pipes
@@ -823,37 +899,6 @@ bool Renderer::InitGeometricMeshes()
 		else
 			initialized = false;
 	}
-
-	glm::mat4 beam_trans = glm::translate(glm::mat4(1.0), glm::vec3(-5, -3.5, 10));
-	RotY = glm::rotate(glm::mat4(1.f), glm::radians(135.f), glm::vec3(0.f, 1.f, 0.f));
-	RotX = glm::rotate(glm::mat4(1.f), glm::radians(90.f), glm::vec3(1.f, 0.f, 0.f));
-	m_beam_transformation_matrix[0] = glm::translate(glm::mat4(1.0), glm::vec3(1, 0, 1)) * beam_trans * RotY * RotX;
-	m_beam_transformation_normal_matrix[0] = glm::mat4(glm::transpose(glm::inverse(glm::mat3(m_beam_transformation_matrix[0]))));
-
-
-	RotZ = glm::rotate(glm::mat4(1.f), glm::radians(90.f), glm::vec3(0.f, 0.f, 1.f));
-	m_beam_transformation_matrix[1] = glm::translate(glm::mat4(1.0), glm::vec3(4, 0, 70)) * beam_trans * RotZ; //* Rotb * Rotc;
-	m_beam_transformation_normal_matrix[1] = glm::mat4(glm::transpose(glm::inverse(glm::mat3(m_beam_transformation_matrix[1]))));
-
-
-	RotZ = glm::rotate(glm::mat4(1.f), glm::radians(90.f), glm::vec3(0.f, 0.f, 1.f));
-	m_beam_transformation_matrix[2] = glm::translate(glm::mat4(1.0), glm::vec3(-11, 0, 120)) * RotZ; //* Rotb * Rotc;
-	m_beam_transformation_normal_matrix[2] = glm::mat4(glm::transpose(glm::inverse(glm::mat3(m_beam_transformation_matrix[2]))));
-
-	RotZ = glm::rotate(glm::mat4(1.f), glm::radians(90.f), glm::vec3(0.f, 0.f, 1.f));
-	m_beam_transformation_matrix[3] = glm::translate(glm::mat4(1.0), glm::vec3(9, 5, 130)) * beam_trans * RotZ; //* Rotb * Rotc;
-	m_beam_transformation_normal_matrix[3] = glm::mat4(glm::transpose(glm::inverse(glm::mat3(m_beam_transformation_matrix[3]))));
-
-	m_beam_transformation_matrix[4] = glm::translate(glm::mat4(1.0), glm::vec3(-5, 3, 100)) * beam_trans * RotZ * RotX; //* Rotb * Rotc;
-	m_beam_transformation_normal_matrix[4] = glm::mat4(glm::transpose(glm::inverse(glm::mat3(m_beam_transformation_matrix[4]))));
-
-	RotY = glm::rotate(glm::mat4(1.f), glm::radians(135.f), glm::vec3(0.f, 1.f, 0.f));
-	RotX = glm::rotate(glm::mat4(1.f), glm::radians(90.f), glm::vec3(1.f, 0.f, 0.f));
-	m_beam_transformation_matrix[5] = glm::translate(glm::mat4(1.0), glm::vec3(-5, -3.5, 100)) * RotY * RotX;
-	m_beam_transformation_normal_matrix[5] = glm::mat4(glm::transpose(glm::inverse(glm::mat3(m_beam_transformation_matrix[5]))));
-
-	m_beam_transformation_matrix[6] = glm::translate(glm::mat4(1.0), glm::vec3(2.2, -12, 120));
-	m_beam_transformation_normal_matrix[6] = glm::mat4(glm::transpose(glm::inverse(glm::mat3(m_beam_transformation_matrix[6]))));
 	delete mesh;
 
 
@@ -869,20 +914,6 @@ bool Renderer::InitGeometricMeshes()
 		else
 			initialized = false;
 	}
-	RotY = glm::rotate(glm::mat4(1.f), glm::radians(180.f), glm::vec3(0.f, 1.f, 0.f));
-
-	m_iris_transformation_matrix[0] = glm::translate(glm::mat4(1.0), glm::vec3(2, -3.1, 79.9)) * RotY;
-	m_iris_transformation_normal_matrix[0] = glm::mat4(glm::transpose(glm::inverse(glm::mat3(m_iris_transformation_matrix[0]))));
-
-	m_iris_transformation_matrix[1] = glm::translate(glm::mat4(1.0), glm::vec3(2, -0.1, 79.9)) * RotY;
-	m_iris_transformation_normal_matrix[1] = glm::mat4(glm::transpose(glm::inverse(glm::mat3(m_iris_transformation_matrix[1]))));
-
-	m_iris_transformation_matrix[2] = glm::translate(glm::mat4(1.0), glm::vec3(-14, -3.1, 119.8)) * RotY;
-	m_iris_transformation_normal_matrix[2] = glm::mat4(glm::transpose(glm::inverse(glm::mat3(m_iris_transformation_matrix[2]))));
-
-	m_iris_transformation_matrix[3] = glm::translate(glm::mat4(1.0), glm::vec3(-14, 3.1, 119.8)) * RotY;
-	m_iris_transformation_normal_matrix[3] = glm::mat4(glm::transpose(glm::inverse(glm::mat3(m_iris_transformation_matrix[3]))));
-
 	delete mesh;
 
 

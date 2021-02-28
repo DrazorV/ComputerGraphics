@@ -120,14 +120,19 @@ protected:
 	ShaderProgram								m_post_program;
 	ShaderProgram								m_spot_light_shadow_map_program;
 	
-
 	// Protected Functions
 	bool InitRenderingTechniques();
 	bool InitIntermediateShaderBuffers();
 	bool InitCommonItems();
 	bool InitLightSources();
 	bool InitGeometricMeshes();
-
+	void BuildWorld();
+	void InitCamera();
+	void RenderGeometry();
+	void RenderStaticGeometry();
+	void RenderCollidableGeometry();
+	void RenderShadowMaps();
+	void RenderPostProcess();
 	
 public:
 	Renderer();
@@ -137,11 +142,11 @@ public:
 	void										Update(float dt);
 	bool										ResizeBuffers(int SCREEN_WIDTH, int SCREEN_HEIGHT);
 	bool										ReloadShaders();
+	void										UpdateGeometry(float dt);
+	void										UpdateCamera(float dt);
 	void										Render();
 
 	// Passes
-	void										RenderShadowMaps();
-	void										RenderGeometry();
 	void										RenderToOutFB();
 
 	// Set functions
