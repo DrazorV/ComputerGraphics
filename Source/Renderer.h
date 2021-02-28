@@ -47,17 +47,12 @@ protected:
 	RENDERING_MODE m_rendering_mode;
 
 	// Lights
-	//more spotlights apo edw meta sto cpp kai sto init lightsources
-
-	SpotLightNode* m_spotlight_node;
+	SpotLightNode m_spotlight_node;
 
 	// Meshes	
 	class GeometryNode** m_wall_geometry;
 	glm::mat4* m_wall_transformation_matrix;
 	glm::mat4* m_wall_transformation_normal_matrix;	
-	class GeometryNode** m_wallCH_geometry;
-	glm::mat4* m_wallCH_transformation_matrix;
-	glm::mat4* m_wallCH_transformation_normal_matrix;
 
 	class GeometryNode** m_corridors_geometry;
 	glm::mat4* m_corridors_transformation_matrix;
@@ -66,6 +61,10 @@ protected:
 	class GeometryNode** m_cannon_geometry;
 	glm::mat4* m_cannon_transformation_matrix;
 	glm::mat4* m_cannon_transformation_normal_matrix;
+
+	class GeometryNode** m_iris_geometry;
+	glm::mat4* m_iris_transformation_matrix;
+	glm::mat4* m_iris_transformation_normal_matrix;
 
 	class GeometryNode** m_pipe_geometry;
 	glm::mat4* m_pipe_transformation_matrix;
@@ -91,32 +90,27 @@ protected:
 	glm::mat4* m_corridor_right_transformation_matrix;
 	glm::mat4* m_corridor_right_transformation_normal_matrix;
 
-	class GeometryNode** m_corridorsCH_geometry;
+	class CollidableNode** m_wallCH_geometry;
+	glm::mat4* m_wallCH_transformation_matrix;
+	glm::mat4* m_wallCH_transformation_normal_matrix;
+
+	class CollidableNode** m_corridorsCH_geometry;
 	glm::mat4* m_corridorsCH_transformation_matrix;
 	glm::mat4* m_corridorsCH_transformation_normal_matrix;
 
-	class GeometryNode** m_corridorCH_fork_geometry;
+	class CollidableNode** m_corridorCH_fork_geometry;
 	glm::mat4* m_corridor_forkCH_transformation_matrix;
 	glm::mat4* m_corridor_forkCH_transformation_normal_matrix;
 
-	class GeometryNode** m_corridorCH_left_geometry;
+	class CollidableNode** m_corridorCH_left_geometry;
 	glm::mat4* m_corridor_leftCH_transformation_matrix;
 	glm::mat4* m_corridor_leftCH_transformation_normal_matrix;
 
-	class GeometryNode** m_corridor_rightCH_geometry;
+	class CollidableNode** m_corridor_rightCH_geometry;
 	glm::mat4* m_corridor_rightCH_transformation_matrix;
 	glm::mat4* m_corridor_rightCH_transformation_normal_matrix;
 
-	class GeometryNode** m_iris_geometry;
-	glm::mat4* m_iris_transformation_matrix;
-	glm::mat4* m_iris_transformation_normal_matrix;
-
-	std::vector<GeometryNode*> m_nodes;
-	std::vector<CollidableNode*> m_collidables_nodes;
-
-	SpotLightNode								m_light;
 	ShaderProgram								m_geometry_program;
-	ShaderProgram								m_deferred_program;
 	ShaderProgram								m_post_program;
 	ShaderProgram								m_spot_light_shadow_map_program;
 	

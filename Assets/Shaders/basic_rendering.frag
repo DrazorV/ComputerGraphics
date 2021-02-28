@@ -4,8 +4,10 @@ layout(location = 0) out vec4 out_color;
 uniform vec3 uniform_diffuse;
 uniform vec3 uniform_specular;
 uniform float uniform_shininess;
+uniform vec3 uniform_ambient;
 uniform float uniform_has_texture;
 uniform sampler2D diffuse_texture;
+uniform sampler2D uniform_tex_normal;
 
 // Camera Properties
 uniform vec3 uniform_camera_position;
@@ -19,13 +21,15 @@ uniform vec3 uniform_light_color;
 uniform float uniform_light_umbra;
 uniform float uniform_light_penumbra;
 uniform int uniform_cast_shadows;
+uniform int uniform_has_tex_normal;
+uniform int uniform_is_tex_bumb;
 uniform sampler2D shadowmap_texture;
 
 float uniform_constant_bias = 0.0001;
 
 in vec2 f_texcoord;
 in vec3 f_position_wcs;
-in vec3 f_normal;
+in mat3 f_TBN;
 
 #define PI 3.14159
 
@@ -79,40 +83,68 @@ float compute_spotlight(vec3 vertex_to_light_direction)
 	return spoteffect;
 }
 
+vec3 blinn_phong(const in vec3 pSurfToEye, const in vec3 pSurfToLight)
+{
+	vec3 normal = f_TBN[2];
+
+	if(uniform_has_tex_normal == 1)
+	{
+		vec3 nmap = texture(uniform_tex_normal, f_texcoord).rgb;
+
+		if(uniform_is_tex_bumb == 1)
+		{
+			float heigh_prev_U = textureOffset(uniform_tex_normal, f_texcoord, ivec2(-1, 0)).r;
+			float heigh_prev_V = textureOffset(uniform_tex_normal, f_texcoord, ivec2(0, -1)).r;
+			normal = normal - f_TBN[0] * (nmap.r - heigh_prev_U) - f_TBN[1] * (nmap.r - heigh_prev_V);
+		}
+		else
+		{
+			nmap = nmap * 2.0 - 1.0;
+			normal = normalize(f_TBN * nmap);
+		}
+	}
+	vec3 halfVector = normalize(pSurfToEye + pSurfToLight);
+
+	float NdotL = max(dot(normal, pSurfToLight), 0.0);
+	float NdotH = max(dot(normal, halfVector), 0.0);
+
+	vec3 albedo = uniform_has_texture == 1 ? texture(diffuse_texture, f_texcoord).rgb : uniform_diffuse;
+
+	vec3 kd = albedo / PI;
+	vec3 ks = uniform_specular;
+
+	float fn =((uniform_shininess + 2) * (uniform_shininess + 4)) /(8 * PI * (uniform_shininess + 1.0 / pow(2, uniform_shininess / 2.0)));
+
+	vec3 diffuse = kd * NdotL;
+	vec3 specular = NdotL > 0.0 ? ks * fn * pow(NdotH, uniform_shininess) : vec3(0.0);
+
+	return (diffuse + specular) * uniform_light_color + uniform_ambient;
+}
+
 void main(void) 
 {
-	vec3 normal = normalize(f_normal);
-	
 	vec4 diffuseColor = vec4(uniform_diffuse.rgb, 1);
 	// if we provide a texture, multiply color with the color of the texture
 	diffuseColor = mix( diffuseColor, diffuseColor * texture(diffuse_texture, f_texcoord), uniform_has_texture);
 	
-	// compute the direction to the light source
-	vec3 vertex_to_light_direction = normalize(uniform_light_position - f_position_wcs.xyz);
 	// compute the distance to the light source
-	float dist = distance(uniform_light_position, f_position_wcs.xyz) + 0.000001; // add small offset to avoid division with zero
+	float dist = distance(uniform_light_position, f_position_wcs) + 0.000001; // add small offset to avoid division with zero
 	
 	// direction to the camera
 	vec3 viewDirection = normalize(uniform_camera_position - f_position_wcs.xyz);	
-	vec3 halfVector = normalize(viewDirection + vertex_to_light_direction);
+
 	
-	float NdotL = max(dot(vertex_to_light_direction, normal), 0.0);
-	float NdotH = max(dot(halfVector, normal), 0.0);
-	
+	vec3 surfToEye = normalize(uniform_camera_position - f_position_wcs);
+	vec3 surfToLight = normalize(uniform_light_position - f_position_wcs);
+	vec3 brdf = blinn_phong(surfToEye, surfToLight);
+
 	// check if we have shadows
 	float shadow_value = (uniform_cast_shadows == 1)? shadow(f_position_wcs.xyz) : 1.0;
 	// compute the spot effect
-	float spotEffect = compute_spotlight(vertex_to_light_direction);
+	float spotEffect = compute_spotlight(surfToLight);
 	//THIS IS THE SHADOW, IT IS REMOVED, PUT BACK LATER
 	float shadow = shadow_value * spotEffect;
-	// compute the incident radiance
-	vec3 irradiance = uniform_light_color * NdotL / dist;
-
-	vec3 diffuseReflection = irradiance * diffuseColor.rgb / PI;
 	
-	float specularNormalization = (uniform_shininess + 8) / (8 * PI);
-	vec3 specularReflection = (NdotL > 0.0)? irradiance * specularNormalization * uniform_specular * pow( NdotH, uniform_shininess + 0.001) : vec3(0);
-	
-	out_color = vec4( diffuseReflection + specularReflection, 1.0);
+	out_color = vec4(brdf * spotEffect / dist, 1.0);
 }
 

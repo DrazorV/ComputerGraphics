@@ -2,23 +2,6 @@
 #include "Tools.h"
 #include "SDL2\SDL.h"
 
-ShaderProgram::ShaderProgram()
-{
-	program = 0;
-
-	vertexShaderFilename = NULL;
-	fragmentShaderFilename = NULL;
-	vs = 0;
-	fs = 0;
-}
-
-ShaderProgram::~ShaderProgram()
-{
-	delete[] vertexShaderFilename;
-	delete[] fragmentShaderFilename;
-	glDeleteProgram(program);
-}
-
 int ShaderProgram::LoadVertexShaderFromFile(const char* filename)
 {
 	// copy vertex shader file path
@@ -157,11 +140,54 @@ GLuint ShaderProgram::GenerateShader(const char* filename, GLenum shaderType)
 GLint ShaderProgram::operator[](const std::string key)
 {
 	auto it = uniforms.find(key);
-	return (it != uniforms.end()) ? it->second : -1;
+
+	if (it == uniforms.cend())
+	{
+		this->LoadUniform(key);
+	}
+
+	return uniforms[key];
 }
 
 GLint ShaderProgram::GetIndex(const std::string key)
 {
 	auto it = uniforms.find(key);
 	return (it != uniforms.end()) ? it->second : -1;
+}
+
+ShaderProgram::ShaderProgram()
+{
+	program = 0;
+	vertexShaderFilename = NULL;
+	fragmentShaderFilename = NULL;
+	vs = 0;
+	fs = 0;
+}
+
+ShaderProgram::~ShaderProgram()
+{
+	delete[] vertexShaderFilename;
+	delete[] fragmentShaderFilename;
+	glDeleteProgram(program);
+}
+
+void ShaderProgram::loadVec3(const std::string& pKey, const glm::vec3& pValue)
+{
+	glUniform3f((*this)[pKey], pValue.x, pValue.y, pValue.z);
+}
+
+void ShaderProgram::loadFloat(const std::string& pKey, const float pValue)
+{
+	glUniform1f((*this)[pKey], pValue);
+}
+
+void ShaderProgram::loadInt(const std::string& pKey, const int pValue)
+{
+	glUniform1i((*this)[pKey], pValue);
+}
+
+void ShaderProgram::loadMat4(const std::string& pKey, const glm::mat4 & pValue)
+{
+	glUniformMatrix4fv((*this)[pKey], 1, GL_FALSE,
+		glm::value_ptr(pValue));
 }
