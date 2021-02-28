@@ -23,19 +23,13 @@ void CollidableNode::Init(class GeometricMesh* mesh)
     super::Init(mesh);
 }
 
-bool CollidableNode::intersectRay(
-    const glm::vec3& pOrigin_wcs,
-    const glm::vec3& pDir_wcs,
-    float& pIsectDist,
-    int32_t& pPrimID,
-    float pTmax,
-    float pTmin)
+bool CollidableNode::intersectRay(const glm::vec3& pOrigin_wcs, const glm::vec3& pDir_wcs, const glm::mat4& pWorldMatrix, float& pIsectDist, float pTmax,float pTmin)
 {
     if (pTmax < pTmin || glm::length(pDir_wcs) < glm::epsilon<float>()) return false;
 
     const glm::vec3 normDir = glm::normalize(pDir_wcs);
 
-    const glm::mat4 wordToModel = super::app_model_matrix;
+    const glm::mat4 wordToModel = glm::inverse(pWorldMatrix * super::app_model_matrix);
     const glm::vec3 o_local = wordToModel * glm::vec4(pOrigin_wcs, 1.f);
     const glm::vec3 d_local = glm::normalize(glm::vec3(wordToModel * glm::vec4(normDir, 0.f)));
 
@@ -43,11 +37,9 @@ bool CollidableNode::intersectRay(
     float_t curMin = pTmax;
     bool found_isect = false;
     glm::vec3 isect(1.f);
-    pPrimID = -1;
 
-    for (uint32_t i = 0; i < this->triangles.size(); ++i)
+    for (auto& tr : this->triangles)
     {
-        auto& tr = this->triangles[i];
         glm::vec3 barycoord;
 
         if (glm::intersectRayTriangle(o_local, d_local, tr.v0, tr.v1, tr.v2, barycoord))
@@ -60,14 +52,13 @@ bool CollidableNode::intersectRay(
                 curMin = dist;
                 found_isect = true;
                 isect = tmp_isect;
-                pPrimID = i;
             }
         }
     }
 
     if (found_isect)
     {
-        glm::vec3 isec_wcs = super::app_model_matrix * glm::vec4(isect, 1.f);
+        glm::vec3 isec_wcs = pWorldMatrix * super::app_model_matrix * glm::vec4(isect, 1.f);
         pIsectDist = glm::distance(pOrigin_wcs, isec_wcs);
     }
 

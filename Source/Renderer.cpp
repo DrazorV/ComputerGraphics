@@ -1243,42 +1243,20 @@ void Renderer::RenderGeometry()
 void Renderer::RenderCollidableGeometry()
 {
 	m_geometry_program.Bind();
-	//glm::vec3 camera_dir = normalize(m_camera_target_position - m_camera_position);
-	
+	glm::vec3 camera_dir = normalize(m_camera_target_position - m_camera_position);
+	float_t isectT = 0.f;
+	int32_t primID = -1;
+
 	for (int i = 0; i < 6; i++)
 	{
-		float_t isectT = 0.f;
-		int32_t primID = -1;
-		int32_t totalRenderedPrims = 0;
-		float_t isectT = 0.f;
-		if (m_corridorsCH_geometry[i]->intersectRay(m_camera_position, camera_dir, isectT, primID)) {
-			this->InitCamera();
-		}
 		
-		glBindVertexArray(m_corridorsCH_geometry[i]->m_vao);
-		glUniformMatrix4fv(m_geometry_program["uniform_model_matrix"], 1, GL_FALSE, glm::value_ptr(m_corridorsCH_transformation_matrix[i]));
-		glUniformMatrix4fv(m_geometry_program["uniform_normal_matrix"], 1, GL_FALSE, glm::value_ptr(m_corridorsCH_transformation_normal_matrix[i]));
-		
-		for (int j = 0; j < m_corridorsCH_geometry[i]->parts.size(); ++j)
-		{
-			glUniform1f(m_geometry_program["uniform_has_texture"], (m_corridorsCH_geometry[i]->parts[j].diffuse_textureID > 0) ? 1.0f : 0.0f);
-			glUniform1i(m_geometry_program["uniform_has_tex_normal"], (m_corridorsCH_geometry[i]->parts[j].bump_textureID > 0 || m_corridorsCH_geometry[i]->parts[j].normal_textureID > 0) ? 1 : 0);
-			glUniform1i(m_geometry_program["uniform_is_tex_bumb"], (m_corridorsCH_geometry[i]->parts[j].bump_textureID > 0) ? 1 : 0);
 
-			glActiveTexture(GL_TEXTURE0);
-			glUniform1i(m_geometry_program["uniform_diffuse_texture"], 0);
-			glBindTexture(GL_TEXTURE_2D, m_corridorsCH_geometry[i]->parts[j].diffuse_textureID);
-			
-			
-			glActiveTexture(GL_TEXTURE1);
-			glUniform1i(m_geometry_program["uniform_tex_normal"], 1);
-			glBindTexture(GL_TEXTURE_2D, m_corridorsCH_geometry[i]->parts[j].bump_textureID > 0 ?m_corridorsCH_geometry[i]->parts[j].bump_textureID : m_corridorsCH_geometry[i]->parts[j].normal_textureID);
+		if (m_corridorsCH_geometry[i]->intersectRay(m_camera_position, camera_dir, m_world_matrix, isectT, primID)) {
+			this->InitCamera();
 		}
 		
 		glBindVertexArray(0);
 	}
-	
-	
 }
 
 void Renderer::RenderToOutFB()
@@ -1547,4 +1525,6 @@ void Renderer::BuildWorld()
 	glm::mat4 rc_trans = glm::translate(glm::mat4(1.0), glm::vec3(-10, 0, 100));
 	m_corridor_right_transformation_matrix[0] = glm::translate(glm::mat4(1.0), glm::vec3(-1, 0, 0)) * rc_trans;
 	m_corridor_right_transformation_normal_matrix[0] = glm::mat4(glm::transpose(glm::inverse(glm::mat3(m_corridor_right_transformation_matrix[0]))));
+
+	this->m_world_matrix = glm::scale(glm::mat4(1.f), glm::vec3(0.02, 0.02, 0.02));
 }

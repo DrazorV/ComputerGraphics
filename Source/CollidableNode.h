@@ -15,8 +15,7 @@ public:
     CollidableNode& operator=(CollidableNode&&) = default;
 
     void Init(GeometricMesh* mesh) override;
-    bool intersectRay(const glm::vec3& pOrigin, const glm::vec3& pDir, float& pIsectDist, int32_t& pPrimID, float pTmax = 1.e+15f, float pTmin = 0.f);
-
+    bool intersectRay(const glm::vec3& pOrigin, const glm::vec3& pDir, const glm::mat4& pWorldMatrix, float& pIsectDist, float pTmax = 1.e+15f, float pTmin = 0.f);
 protected:
 
     // Empty
